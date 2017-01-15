@@ -9,7 +9,7 @@ React Validation Framework
 
 ***Purpose***
 
-To make task of validation fields on UI a lot simple.
+To make task of validating fields on UI (client side validation) a lot simple.
 
 ***Install***
 
