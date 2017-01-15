@@ -1,3 +1,8 @@
+/*
+* author Vishal Daga
+* Email: vishaldaga10@gmail.com
+* */
+
 import React, { Component, PropTypes } from "react";
 import _ from "lodash";
 
