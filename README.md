@@ -7,10 +7,12 @@ React Validation Framework
 
 ***
 
-***Purpose ***
+***Purpose***
+
 To make task of validation fields on UI a lot simple.
 
-***Install ***
+***Install***
+
 npm i react-validation-framework --save
 
 ***Background***
@@ -25,7 +27,7 @@ Ofcourse using ref validity of a paritcular filed at any point can be found.
 - If a component is not supported out of box, the support for your new/custom component can be added easily
 - Error Text style can be customized
 
-***Basic usage ***
+***Basic Usage***
 
 
     <Validation
@@ -71,6 +73,7 @@ Ofcourse using ref validity of a paritcular filed at any point can be found.
 
 
 ***Notes***
+
 1- Validation accepts an array of validators functions, each with their respective error messages.
 The order is important and the field is validated as per the order. For validator function we can use third-party library - validator,
 as like above, which has whole bunch of well tested regex, like isEmpty, isEmail,
