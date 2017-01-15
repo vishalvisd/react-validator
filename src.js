@@ -1,39 +1,8 @@
-/*
-* author Vishal Daga
-* Email: vishaldaga10@gmail.com
-* */
-
 import React, { Component, PropTypes } from "react";
 import _ from "lodash";
 
 let groups = {};
 let userAddedComponents = {};
-
-let Groupings = {
-  checkGroup: (groupName) => {
-    let valid = true;
-    let validityRes = {
-      isValid: true,
-      validCompponents: [],
-      inValidComponents: []
-    };
-    let allCompsInGroup = groups[groupName];
-    if (allCompsInGroup === undefined) {
-      valid = true;
-    } else {
-      allCompsInGroup.forEach((v) => {
-        if (v.isValid === false){
-          valid = false;
-          validityRes.inValidComponents.push(v.props.children);
-        } else {
-          validityRes.validCompponents.push(v.props.children);
-        }
-      });
-    }
-    validityRes.isValid = valid;
-    return validityRes;
-  }
-};
 
 let internalSupportedComponents = {
   TextField: {
@@ -85,7 +54,7 @@ function getAllSupportedComponent(){
   return Object.assign({}, internalSupportedComponents, userAddedComponents);
 }
 
-let SupportedComponentByFieldValidator = {
+let fieldValidatorCore = {
   addSupport: (name, getValueFromChangeEvent, changeCallBackCaller, errorPropName) => {
     userAddedComponents[name] = {
       getValueFromChangeEvent: getValueFromChangeEvent,
@@ -102,6 +71,29 @@ let SupportedComponentByFieldValidator = {
   },
   getAllCurrentlySupported: ()=>{
     return getAllSupportedComponent();
+  },
+  checkGroup: (groupName) => {
+    let valid = true;
+    let validityRes = {
+      isValid: true,
+      validCompponents: [],
+      inValidComponents: []
+    };
+    let allCompsInGroup = groups[groupName];
+    if (allCompsInGroup === undefined) {
+      valid = true;
+    } else {
+      allCompsInGroup.forEach((v) => {
+        if (v.isValid === false){
+          valid = false;
+          validityRes.inValidComponents.push(v.props.children);
+        } else {
+          validityRes.validCompponents.push(v.props.children);
+        }
+      });
+    }
+    validityRes.isValid = valid;
+    return validityRes;
   }
 };
 
@@ -149,7 +141,7 @@ class Validation extends Component {
       } else {
         console.error("Field-Validator",
           `${this.typeOfCompnent} is currently not supported by field-validator, 
-          Please use SupportedComponentByFieldValidator to add support for the component, For more information please refer to docs`);
+          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs`);
         console.info("Field-Validator", `Ignoring ${this.typeOfCompnent}, and it will work as if it was not wraped with Validation tag`);
         this.mountingSetup(null, null, true);
       }
@@ -258,7 +250,7 @@ class Validation extends Component {
         {
           this.state.childCompoentToRender ? this.state.childCompoentToRender : ""
         }{
-          (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ? <div style={{color: "red"}}>
+          (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ? <div style={Object.assign({}, {color: "red"}, this.props.errorStyle)}>
             {
               this.state.errorText
             }
@@ -278,13 +270,15 @@ Validation.propTypes = {
   onChangeCallback: PropTypes.string,
   group: PropTypes.string,
   valueProp: PropTypes.string,
-  defaultValueProp: PropTypes.string
+  defaultValueProp: PropTypes.string,
+  errorStyle: PropTypes.object
 };
 
 Validation.defaultProps = {
   onChangeCallback: "onChange",
   valueProp: "value",
-  defaultValueProp: "defaultValue"
+  defaultValueProp: "defaultValue",
+  errorStyle: {}
 };
 
-export {Validation, Groupings, SupportedComponentByFieldValidator};
+export {Validation, fieldValidatorCore};
