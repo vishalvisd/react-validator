@@ -1,0 +1,40 @@
+{
+  "name": "react-validator",
+  "version": "1.0.0",
+  "description": "Component to validate fields, supports all components including material-ui components",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vishalvisd/react-validator.git"
+  },
+  "keywords": [
+    "React",
+    "Validator",
+    "material-ui",
+    "html"
+  ],
+  "author": "Vishal Daga",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vishalvisd/react-validator/issues"
+  },
+  "homepage": "https://github.com/vishalvisd/react-validator#readme",
+  "dependencies": {
+    "loadash": "0.0.1"
+  },
+  "peerDependencies": {
+    "react": "^15.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-plugin-transform-object-rest-spread": "^6.20.2",
+    "babel-preset-es2015": "6.18.0",
+    "babel-preset-react": "6.16.0",
+    "babel-preset-stage-0": "6.16.0",
+    "webpack": "^1.14.0"
+  }
+}
