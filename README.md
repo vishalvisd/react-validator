@@ -17,8 +17,8 @@ npm i react-validation-framework --save
 
 ***Background***
 
-Validating fields in React is not simple because of one-way binding. Hence, validation task is complex, and stores often has be burdened.
-With this, you just need to wrap you field component that needs to be validated. This also supports material-ui components.
+Validating fields in React is not simple because of one-way binding. Hence, validation task is complex, and stores often has to be burdened.
+With this, you just need to wrap your field component that needs to be validated. This also supports material-ui components.
 
 ***Features***
 - Supports components that have specific errorText prop like in case of material-ui components
@@ -43,6 +43,8 @@ Ofcourse using ref validity of a paritcular filed at any point can be found.
 
 ***Real Code Example***
 
+    import {Validation, fieldValidatorCore} from "react-validation-framework";
+    import validator from "validator";
     <Validation group="myGroup1"
 		validators={[
 				{
@@ -75,12 +77,12 @@ Ofcourse using ref validity of a paritcular filed at any point can be found.
 ***Notes***
 
 1- Validation accepts an array of validators functions, each with their respective error messages.
-The order is important and the field is validated as per the order. For validator function we can use third-party library - validator,
+The order is important and the field is validated as per the order. For validator function third-party library can be used like - [validator](github.com/chriso/validator.js),
 as like above, which has whole bunch of well tested regex, like isEmpty, isEmail,
 etc or we can supply our own function for specific case to validate.
 
-2- we can add “group” prop (attribute) and define the group in which the filed belongs.
-Later we can use the group name to find whether a group of filed is valid like this :
+2- “group” prop can be added to define the group in which the filed belongs.
+Later the group name can be used to find whether a group of filed is valid or not like this :
 
     handleSubmit(){
         let checkFieldTestResult = fieldValidatorCore.checkGroup("myGroup1");
@@ -94,4 +96,26 @@ Later we can use the group name to find whether a group of filed is valid like t
       }
 
 
-  or we can simple add a ref to the Validation tag and call the isValid method to find if the field is valid.
+  or simply add a ref to the Validation tag and call the isValid method to find if the field is valid.
+  
+  3- To add a new component
+Signature - 
+`fieldValidatorCore.addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName)`
+
+**name** - string - Tag name of you component
+
+**getValueFromChangeEvent** - function - (arg)=>{}
+
+**changeCallBackCaller** - function - (callback, args)=>{}
+
+**errorPropName**- string - if your component has a prop for errorText, ex. some* *material-ui components have "errorText"
+
+add the component before your page component mounts, like
+
+    componentWillMount(){
+        fieldValidatorCore.addSupport("TextField", (args)=>{
+          return args[0].target.value;
+        }, (callback, args)=>{
+          callback(args[0]);
+        }, "errorText");
+      }
