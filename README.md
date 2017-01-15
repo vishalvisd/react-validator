@@ -99,6 +99,7 @@ Later the group name can be used to find whether a group of filed is valid or no
   or simply add a ref to the Validation tag and call the isValid method to find if the field is valid.
   
   3- To add a new component
+
 Signature - 
 `fieldValidatorCore.addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName)`
 
