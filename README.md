@@ -21,8 +21,8 @@ npm i react-validation-framework --save
 ***Features***
 - Supports components that have specific errorText prop like in case of material-ui components
 - Supports consolidated validation of a group of fields. This is acheived by specifying the group name as prop to the Validation component.
-Ofcourse using ref validity of a paritcular filed at any point can be found.
-- If a component is not supported out of box, the support for your new/custom component can be added easily
+Using ref validity of a paritcular filed at any point can be found.
+- If a component is not supported out of box, then support for your new/custom component can be added easily
 - Error Text style can be customized
 
 ***Basic Usage***
