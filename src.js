@@ -1,6 +1,23 @@
 import React, { Component, PropTypes } from "react";
 import _ from "lodash";
 
+function generateUUID() {
+  var basex = 16;
+  var d = new Date().getTime();
+  if (window.performance && typeof window.performance.now === "function"){
+    d += performance.now(); //use high-precision timer if available
+  }
+  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    var r = (d + Math.random()*basex)%basex | 0;
+    d = Math.floor(d/basex);
+    var sr = 0x3;
+    var srx = r&sr;
+    var srx1 = 0x8;
+    return (c==="x" ? r : (srx|srx1)).toString(basex);
+  });
+  return uuid;
+}
+
 let groups = {};
 let userAddedComponents = {};
 
@@ -83,7 +100,8 @@ let fieldValidatorCore = {
     if (allCompsInGroup === undefined) {
       valid = true;
     } else {
-      allCompsInGroup.forEach((v) => {
+      allCompsInGroup.forEach((v1) => {
+        let v = v1.component;
         if (v.isValid === false){
           valid = false;
           validityRes.inValidComponents.push(v.props.children);
@@ -105,7 +123,8 @@ class Validation extends Component {
     this.state = {
       childCompoentToRender: null,
       unControlledChild: true,
-      isValid: true
+      isValid: true,
+      id: generateUUID()
     };
     this.testValidity = this.testValidity.bind(this);
   }
@@ -153,7 +172,10 @@ class Validation extends Component {
       if (groups[this.props.group] === undefined){
         groups[this.props.group] = [];
       }
-      groups[this.props.group].push(this);
+      groups[this.props.group].push({
+        id: this.state.id,
+        component: this
+      });
     }
   }
 
@@ -239,6 +261,14 @@ class Validation extends Component {
       });
     }
     return res.isValid;
+  }
+
+  componentWillUnmount(){
+    if (this.props.group){
+      _.remove(groups[this.props.group], (v)=>{
+        return v.id === this.state.id;
+      });
+    }
   }
 
   render() {
