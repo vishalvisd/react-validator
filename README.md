@@ -5,17 +5,18 @@ React Validation Framework
 
 Validating fields on UI (client side validation) a lot simpler.
 
-**
+***
+
+Validating fields in React is complex because of one-way binding and stores often has to be burdened.
+With this, you just need to wrap your field component that needs to be validated. This also supports material-ui components.
+
+
 
 
 ***Install***
 
 npm i react-validation-framework --save
 
-
-
-Validating fields in React is complex because of one-way binding and stores often has to be burdened.
-With this, you just need to wrap your field component that needs to be validated. This also supports material-ui components.
 
 ***Features***
 - Supports components that have specific errorText prop like in case of material-ui components
