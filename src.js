@@ -54,7 +54,7 @@ let internalSupportedComponents = {
       return args[1];
     },
     changeCallBackCaller: (callback, args)=>{
-      callback(args[1]);
+      callback(args, args[1]);
     }
   },
   Select: {
