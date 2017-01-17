@@ -143,6 +143,7 @@ class Validation extends Component {
         if (this.childModified === true || isDerivedValueComing){
           if (!(_.isEqual(this.currentChildValue, props.children.props[this.props.valueProp]))){
             this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
+            this.currentChildValue = props.children.props[this.props.valueProp];
             this.testValidity(props.children.props.value);
           }
         }
