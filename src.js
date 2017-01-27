@@ -1,19 +1,19 @@
-import React, {Component, PropTypes} from "react";
+import React, { Component, PropTypes } from "react";
 import _ from "lodash";
 
 function generateUUID() {
   var basex = 16;
   var d = new Date().getTime();
-  if (window.performance && typeof window.performance.now === "function") {
+  if (window.performance && typeof window.performance.now === "function"){
     d += performance.now(); //use high-precision timer if available
   }
-  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (d + Math.random() * basex) % basex | 0;
-    d = Math.floor(d / basex);
+  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+    var r = (d + Math.random()*basex)%basex | 0;
+    d = Math.floor(d/basex);
     var sr = 0x3;
-    var srx = r & sr;
+    var srx = r&sr;
     var srx1 = 0x8;
-    return (c === "x" ? r : (srx | srx1)).toString(basex);
+    return (c==="x" ? r : (srx|srx1)).toString(basex);
   });
   return uuid;
 }
@@ -23,51 +23,51 @@ let userAddedComponents = {};
 
 let internalSupportedComponents = {
   TextField: {
-    getValueFromChangeEvent: (args)=> {
+    getValueFromChangeEvent: (args)=>{
       return args[0].target.value;
     },
-    changeCallBackCaller: (callback, args)=> {
+    changeCallBackCaller: (callback, args)=>{
       callback(args[0]);
     },
     errorPropName: "errorText"
   },
   SelectField: {
-    getValueFromChangeEvent: (args)=> {
+    getValueFromChangeEvent: (args)=>{
       return args[1];
     },
-    changeCallBackCaller: (callback, args)=> {
+    changeCallBackCaller: (callback, args)=>{
       callback(args[0], args[1], args[2]);
     },
     errorPropName: "errorText"
   },
   DateRangePicker: {
-    getValueFromChangeEvent: (args)=> {
+    getValueFromChangeEvent: (args)=>{
       return args[0];
     },
-    changeCallBackCaller: (callback, args)=> {
+    changeCallBackCaller: (callback, args)=>{
       callback(args[0]);
     },
     errorPropName: "errorText"
   },
   DatePicker: {
-    getValueFromChangeEvent: (args)=> {
+    getValueFromChangeEvent: (args)=>{
       return args[1];
     },
-    changeCallBackCaller: (callback, args)=> {
+    changeCallBackCaller: (callback, args)=>{
       callback(args, args[1]);
     }
   },
   Select: {
-    getValueFromChangeEvent: (args)=> {
+    getValueFromChangeEvent: (args)=>{
       return args[0];
     },
-    changeCallBackCaller: (callback, args)=> {
+    changeCallBackCaller: (callback, args)=>{
       callback(args[0]);
     }
   }
 };
 
-function getAllSupportedComponent() {
+function getAllSupportedComponent(){
   return Object.assign({}, internalSupportedComponents, userAddedComponents);
 }
 
@@ -80,13 +80,13 @@ let fieldValidatorCore = {
     };
   },
   removeSupport: (name) => {
-    if (userAddedComponents[name] !== undefined) {
+    if (userAddedComponents[name] !== undefined){
       delete userAddedComponents.name;
     } else {
       console.info("Field-Validator", "removeComponent: didn't find the component");
     }
   },
-  getAllCurrentlySupported: ()=> {
+  getAllCurrentlySupported: ()=>{
     return getAllSupportedComponent();
   },
   checkGroup: (groupName) => {
@@ -102,7 +102,7 @@ let fieldValidatorCore = {
     } else {
       allCompsInGroup.forEach((v1) => {
         let v = v1.component;
-        if (v.isValid === false) {
+        if (v.isValid === false){
           valid = false;
           validityRes.inValidComponents.push(v.props.children);
         } else {
@@ -133,32 +133,19 @@ class Validation extends Component {
     return this.testValidity(this.currentChildValue);
   }
 
-  componentWillReceiveProps(props) {
-    if (this.state.unsupported !== true) {
-      if (this.state.unControlledChild === false) {
+  componentWillReceiveProps(props){
+    if (this.state.unsupported !== true){
+      if (this.state.unControlledChild === false){
         let isDerivedValueComing = false;
-        if (!(_.isEqual(this.originalVal, props.children.props[this.props.valueProp]))) {
+        if (!(_.isEqual(this.originalVal, props.children.props[this.props.valueProp]))){
           isDerivedValueComing = true;
         }
-        if (this.childModified === true || isDerivedValueComing) {
-          let diff = _.reduce(this.baseProps, function(result, value, key) {
-            return _.isEqual(value, props.children.props[key]) ?
-              result : result.concat(key);
-          }, []);
-          if (diff.length > 0){
-            this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent, getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, props);
+        if (this.childModified === true || isDerivedValueComing){
+          if (!(_.isEqual(this.currentChildValue, props.children.props[this.props.valueProp]))){
+            this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
             this.currentChildValue = props.children.props[this.props.valueProp];
-            this.childModified = true;
+            this.testValidity(props.children.props.value);
           }
-        }
-      } else {
-        //
-        let diff = _.reduce(this.baseProps, function(result, value, key) {
-          return _.isEqual(value, props.children.props[key]) ?
-            result : result.concat(key);
-        }, []);
-        if (diff.length > 0){
-          this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent, getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, props);
         }
       }
     }
@@ -166,24 +153,24 @@ class Validation extends Component {
 
   componentWillMount() {
     this.typeOfCompnent = this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name;
-    if (userAddedComponents[this.typeOfCompnent] !== undefined) {
+    if (userAddedComponents[this.typeOfCompnent] !== undefined){
       this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
     } else {
-      if (internalSupportedComponents[this.typeOfCompnent] !== undefined) {
+      if (internalSupportedComponents[this.typeOfCompnent] !== undefined){
         this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
       } else {
         console.error("Field-Validator",
           `${this.typeOfCompnent} is currently not supported by field-validator, 
           Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs`);
         console.info("Field-Validator", `Ignoring ${this.typeOfCompnent}, and it will work as if it was not wraped with Validation tag`);
-        this.mountingSetup(null, null, false, true);
+        this.mountingSetup(null, null, true);
       }
     }
   }
 
-  componentDidMount() {
-    if (this.props.group && this.state.unsupported !== true) {
-      if (groups[this.props.group] === undefined) {
+  componentDidMount(){
+    if (this.props.group && this.state.unsupported !== true){
+      if (groups[this.props.group] === undefined){
         groups[this.props.group] = [];
       }
       groups[this.props.group].push({
@@ -193,39 +180,34 @@ class Validation extends Component {
     }
   }
 
-  mountingSetup(valueFromArgs, argsToPassToActualHandler, nextProps, unsupportedFlag) {
-    let toUseProps = nextProps ? nextProps : this.props;
-    if (unsupportedFlag === true) {
+  mountingSetup(valueFromArgs, argsToPassToActualHandler, unsupportedFlag){
+    if (unsupportedFlag === true){
       this.setState({
-        childCompoentToRender: toUseProps.children,
+        childCompoentToRender: this.props.children,
         unsupported: unsupportedFlag
       });
     } else {
-      this.baseProps = _.cloneDeep(toUseProps.children.props);
+      this.baseProps = _.cloneDeep(this.props.children.props);
       let isUncontrolled = true;
-      if (this.baseProps[toUseProps.valueProp] !== undefined) {
+      if (this.baseProps[this.props.valueProp] !== undefined){
         isUncontrolled = false;
-        if (!nextProps){
-          this.originalVal = this.baseProps[toUseProps.valueProp];
-        }
-        this.currentChildValue = this.baseProps[toUseProps.valueProp];
+        this.originalVal = this.baseProps[this.props.valueProp];
+        this.currentChildValue = this.baseProps[this.props.valueProp];
       } else {
         //try with default prop
-        if (this.baseProps[toUseProps.defaultValueProp] !== undefined) {
-          if (!nextProps){
-            this.originalVal = this.baseProps[toUseProps.defaultValueProp];
-          }
-          this.currentChildValue = this.baseProps[toUseProps.defaultValueProp];
+        if (this.baseProps[this.props.defaultValueProp] !== undefined){
+          this.originalVal = this.baseProps[this.props.defaultValueProp];
+          this.currentChildValue = this.baseProps[this.props.defaultValueProp];
         }
       }
 
-      let oldOnChange = this.baseProps[toUseProps.onChangeCallback];
-      this.baseProps[toUseProps.onChangeCallback] = (...args)=> {
+      let oldOnChange = this.baseProps[this.props.onChangeCallback];
+      this.baseProps[this.props.onChangeCallback] = (...args)=>{
         let rArgs = valueFromArgs(args);
         this.childModified = true;
-        if (!this.absorbing) {
+        if (!this.absorbing){
           this.absorbing = true;
-          this.baseProps[toUseProps.valueProp] = rArgs;
+          this.baseProps[this.props.valueProp] = rArgs;
           this.currentChildValue = rArgs;
           this.testValidity(rArgs);
           if (oldOnChange) {
@@ -234,26 +216,22 @@ class Validation extends Component {
           this.absorbing = false;
         }
       };
-      if (nextProps){
-        this.testValidity(this.currentChildValue);
-      } else {
-        let theComponent = React.cloneElement(toUseProps.children, this.baseProps);
-        this.setState({
-          childCompoentToRender: theComponent,
-          unControlledChild: isUncontrolled
-        });
-      }
+      let theComponent = React.cloneElement(this.props.children, this.baseProps);
+      this.setState({
+        childCompoentToRender: theComponent,
+        unControlledChild: isUncontrolled
+      });
     }
   }
 
-  testValidity(val) {
+  testValidity(val){
     let res = {
       isValid: true,
       errorMessage: null
     };
     try {
-      this.props.validators.every((v)=> {
-        if (v.validator(val) === false) {
+      this.props.validators.every((v)=>{
+        if (v.validator(val) === false){
           res.isValid = false;
           res.errorMessage = v.errorMessage;
           return false;
@@ -264,8 +242,8 @@ class Validation extends Component {
     } catch (err) {
       console.error(err);
     }
-    if (res.isValid === false) {
-      if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
+    if (res.isValid === false){
+      if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName){
         this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorMessage;
       }
       this.setState({
@@ -274,7 +252,7 @@ class Validation extends Component {
         errorText: res.errorMessage
       });
     } else {
-      if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
+      if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName){
         this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
       }
       this.setState({
@@ -286,16 +264,16 @@ class Validation extends Component {
     return res.isValid;
   }
 
-  componentWillUnmount() {
-    if (this.props.group) {
-      _.remove(groups[this.props.group], (v)=> {
+  componentWillUnmount(){
+    if (this.props.group){
+      _.remove(groups[this.props.group], (v)=>{
         return v.id === this.state.id;
       });
     }
   }
 
   render() {
-    if (this.state.unsupported === true) {
+    if (this.state.unsupported === true){
       return this.props.children;
     } else {
       return (
@@ -303,12 +281,11 @@ class Validation extends Component {
         {
           this.state.childCompoentToRender ? this.state.childCompoentToRender : ""
         }{
-          (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ?
-            <div style={Object.assign({}, {color: "red"}, this.props.errorStyle)}>
-              {
-                this.state.errorText
-              }
-            </div> : ""
+          (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ? <div style={Object.assign({}, {color: "red"}, this.props.errorStyle)}>
+            {
+              this.state.errorText
+            }
+          </div> : ""
         }
       </span>
       );
