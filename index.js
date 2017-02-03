@@ -59,7 +59,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.SupportedComponentByFieldValidator = exports.Groupings = exports.Validation = undefined;
+	exports.fieldValidatorCore = exports.Validation = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -79,34 +79,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	function generateUUID() {
+	  var basex = 16;
+	  var d = new Date().getTime();
+	  if (window.performance && typeof window.performance.now === "function") {
+	    d += performance.now(); //use high-precision timer if available
+	  }
+	  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+	    var r = (d + Math.random() * basex) % basex | 0;
+	    d = Math.floor(d / basex);
+	    var sr = 0x3;
+	    var srx = r & sr;
+	    var srx1 = 0x8;
+	    return (c === "x" ? r : srx | srx1).toString(basex);
+	  });
+	  return uuid;
+	}
+
 	var groups = {};
 	var userAddedComponents = {};
-
-	var Groupings = {
-	  checkGroup: function checkGroup(groupName) {
-	    var valid = true;
-	    var validityRes = {
-	      isValid: true,
-	      validCompponents: [],
-	      inValidComponents: []
-	    };
-	    var allCompsInGroup = groups[groupName];
-	    if (allCompsInGroup === undefined) {
-	      valid = true;
-	    } else {
-	      allCompsInGroup.forEach(function (v) {
-	        if (v.isValid === false) {
-	          valid = false;
-	          validityRes.inValidComponents.push(v.props.children);
-	        } else {
-	          validityRes.validCompponents.push(v.props.children);
-	        }
-	      });
-	    }
-	    validityRes.isValid = valid;
-	    return validityRes;
-	  }
-	};
 
 	var internalSupportedComponents = {
 	  TextField: {
@@ -141,7 +132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return args[1];
 	    },
 	    changeCallBackCaller: function changeCallBackCaller(callback, args) {
-	      callback(args[1]);
+	      callback(args, args[1]);
 	    }
 	  },
 	  Select: {
@@ -158,7 +149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Object.assign({}, internalSupportedComponents, userAddedComponents);
 	}
 
-	var SupportedComponentByFieldValidator = {
+	var fieldValidatorCore = {
 	  addSupport: function addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName) {
 	    userAddedComponents[name] = {
 	      getValueFromChangeEvent: getValueFromChangeEvent,
@@ -175,6 +166,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  getAllCurrentlySupported: function getAllCurrentlySupported() {
 	    return getAllSupportedComponent();
+	  },
+	  checkGroup: function checkGroup(groupName) {
+	    var valid = true;
+	    var validityRes = {
+	      isValid: true,
+	      validCompponents: [],
+	      inValidComponents: []
+	    };
+	    var allCompsInGroup = groups[groupName];
+	    if (allCompsInGroup === undefined) {
+	      valid = true;
+	    } else {
+	      allCompsInGroup.forEach(function (v1) {
+	        var v = v1.component;
+	        if (v.isValid === false) {
+	          valid = false;
+	          validityRes.inValidComponents.push(v.props.children);
+	        } else {
+	          validityRes.validCompponents.push(v.props.children);
+	        }
+	      });
+	    }
+	    validityRes.isValid = valid;
+	    return validityRes;
 	  }
 	};
 
@@ -189,7 +204,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.state = {
 	      childCompoentToRender: null,
 	      unControlledChild: true,
-	      isValid: true
+	      isValid: true,
+	      id: generateUUID()
 	    };
 	    _this.testValidity = _this.testValidity.bind(_this);
 	    return _this;
@@ -207,6 +223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          if (this.childModified === true || isDerivedValueComing) {
 	            if (!_lodash2.default.isEqual(this.currentChildValue, props.children.props[this.props.valueProp])) {
 	              this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
+	              this.currentChildValue = props.children.props[this.props.valueProp];
 	              this.testValidity(props.children.props.value);
 	            }
 	          }
@@ -223,7 +240,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (internalSupportedComponents[this.typeOfCompnent] !== undefined) {
 	          this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
 	        } else {
-	          console.error("Field-Validator", this.typeOfCompnent + " is currently not supported by field-validator, \n          Please use SupportedComponentByFieldValidator to add support for the component, For more information please refer to docs");
+	          console.error("Field-Validator", this.typeOfCompnent + " is currently not supported by field-validator, \n          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs");
 	          console.info("Field-Validator", "Ignoring " + this.typeOfCompnent + ", and it will work as if it was not wraped with Validation tag");
 	          this.mountingSetup(null, null, true);
 	        }
@@ -236,7 +253,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (groups[this.props.group] === undefined) {
 	          groups[this.props.group] = [];
 	        }
-	        groups[this.props.group].push(this);
+	        groups[this.props.group].push({
+	          id: this.state.id,
+	          component: this
+	        });
 	      }
 	    }
 	  }, {
@@ -334,6 +354,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return res.isValid;
 	    }
 	  }, {
+	    key: "componentWillUnmount",
+	    value: function componentWillUnmount() {
+	      var _this3 = this;
+
+	      if (this.props.group) {
+	        _lodash2.default.remove(groups[this.props.group], function (v) {
+	          return v.id === _this3.state.id;
+	        });
+	      }
+	    }
+	  }, {
 	    key: "render",
 	    value: function render() {
 	      if (this.state.unsupported === true) {
@@ -345,7 +376,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.state.childCompoentToRender ? this.state.childCompoentToRender : "",
 	          !getAllSupportedComponent()[this.typeOfCompnent].errorPropName && this.state.isValid === false ? _react2.default.createElement(
 	            "div",
-	            { style: { color: "red" } },
+	            { style: Object.assign({}, { color: "red" }, this.props.errorStyle) },
 	            this.state.errorText
 	          ) : ""
 	        );
@@ -367,18 +398,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  onChangeCallback: _react.PropTypes.string,
 	  group: _react.PropTypes.string,
 	  valueProp: _react.PropTypes.string,
-	  defaultValueProp: _react.PropTypes.string
+	  defaultValueProp: _react.PropTypes.string,
+	  errorStyle: _react.PropTypes.object
 	};
 
 	Validation.defaultProps = {
 	  onChangeCallback: "onChange",
 	  valueProp: "value",
-	  defaultValueProp: "defaultValue"
+	  defaultValueProp: "defaultValue",
+	  errorStyle: {}
 	};
 
 	exports.Validation = Validation;
-	exports.Groupings = Groupings;
-	exports.SupportedComponentByFieldValidator = SupportedComponentByFieldValidator;
+	exports.fieldValidatorCore = fieldValidatorCore;
 
 /***/ },
 /* 1 */
