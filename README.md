@@ -34,6 +34,7 @@ Using ref validity of a paritcular filed at any point can be found.
       onChangeCallback={<optional, default is 'onChange'>}
       valueProp={<optional, default is 'value'>}
       defaultValueProp={<optional, default is 'onChange'>}
+      closures={<object>}
       errorStyle={<optional>} >
         <YourComponent />
     </Validation>
@@ -44,7 +45,8 @@ Using ref validity of a paritcular filed at any point can be found.
     import {Validation, fieldValidatorCore} from "react-validation-framework";
     import validator from "validator";
     <Validation group="myGroup1"
-		validators={[
+    		    closures={{area}}
+		        validators={[
 				{
 		         validator: (val) => !validator.isEmpty(val),
 		         errorMessage: "Cannot be left empty"
@@ -59,14 +61,14 @@ Using ref validity of a paritcular filed at any point can be found.
 	                   return true;
 	               }
 	             errorMessage: "Must be any number less than 100"
-                }
-            }]}>
+                }}]}>
                 <TextField value={this.state.value}
                            className={styles.inputStyles}
                            style={{width: "100%"}}
                            onChange={
                             (evt)=>{
                               console.log("you have typed: ", evt.target.value);
+			                  console.log("this value is defined in differenet scope and hence added to closures prop", area);
                             }
                            }/>
     </Validation>
@@ -118,3 +120,28 @@ add the component before your page component mounts, like
           callback(args[0]);
         }, "errorText");
       }
+
+4- (with 2.3.0), If any other prop other than value prop of your field component has value derived from upper scope/closure, ex - 'area' in onChange, it is better to added those closures in a prop called closures, otherwise, if the value changes you field componenet will still be having old value
+ 
+
+    <Validation group="ga1" closures={{area}} validators={...}>
+      <TextField className={styles.inputStyles}
+    	     value={foo}
+    	     onChange={
+    	      (evt)=>{
+    		fooFun(area, evt.target.value)
+    	      }
+    	     }
+    	     onKeyUp={
+    		(evt)=>{
+    		  if (evt.keyCode === enterKeyCode){
+    		    barFun(area, evt.target.value)
+    		  }
+    
+    		}
+    	       }
+      />
+    </Validation> 
+
+
+
