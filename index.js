@@ -214,6 +214,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Validation, [{
 	    key: "componentWillReceiveProps",
 	    value: function componentWillReceiveProps(props) {
+	      var freshRendered = false;
 	      if (this.state.unsupported !== true) {
 	        if (this.state.unControlledChild === false) {
 	          var isDerivedValueComing = false;
@@ -224,9 +225,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!_lodash2.default.isEqual(this.currentChildValue, props.children.props[this.props.valueProp])) {
 	              this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
 	              this.currentChildValue = props.children.props[this.props.valueProp];
+	              freshRendered = true;
 	              this.testValidity(props.children.props.value);
 	            }
 	          }
+	        }
+	      }
+	      if (Object.keys(this.closureValues).length > 0 && freshRendered === false) {
+	        //match closures
+	        var requireRender = false;
+	        _lodash2.default.forOwn(this.closureValues, function (cVariableValue, cVariable) {
+	          if (!_lodash2.default.isEqual(cVariableValue, props.closures[cVariable])) {
+	            requireRender = true;
+	          }
+	        });
+	        if (requireRender) {
+	          this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent, getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, false, props);
 	        }
 	      }
 	    }
@@ -261,32 +275,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }, {
 	    key: "mountingSetup",
-	    value: function mountingSetup(valueFromArgs, argsToPassToActualHandler, unsupportedFlag) {
+	    value: function mountingSetup(valueFromArgs, argsToPassToActualHandler, unsupportedFlag, nextProps) {
 	      var _this2 = this;
 
+	      var toUseProps = nextProps ? nextProps : this.props;
 	      if (unsupportedFlag === true) {
 	        this.setState({
-	          childCompoentToRender: this.props.children,
+	          childCompoentToRender: toUseProps.children,
 	          unsupported: unsupportedFlag
 	        });
 	      } else {
 	        (function () {
-	          _this2.baseProps = _lodash2.default.cloneDeep(_this2.props.children.props);
+	          _this2.closureValues = {};
+	          if (Object.keys(toUseProps.closures).length > 0) {
+	            _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
+	              _this2.closureValues[cVariable] = cVariableValue;
+	            });
+	          }
+	          _this2.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
 	          var isUncontrolled = true;
-	          if (_this2.baseProps[_this2.props.valueProp] !== undefined) {
+	          if (_this2.baseProps.hasOwnProperty(toUseProps.valueProp)) {
 	            isUncontrolled = false;
-	            _this2.originalVal = _this2.baseProps[_this2.props.valueProp];
-	            _this2.currentChildValue = _this2.baseProps[_this2.props.valueProp];
+	            if (nextProps !== true) {
+	              _this2.originalVal = _this2.baseProps[toUseProps.valueProp];
+	            }
+	            _this2.currentChildValue = _this2.baseProps[toUseProps.valueProp];
 	          } else {
 	            //try with default prop
-	            if (_this2.baseProps[_this2.props.defaultValueProp] !== undefined) {
-	              _this2.originalVal = _this2.baseProps[_this2.props.defaultValueProp];
-	              _this2.currentChildValue = _this2.baseProps[_this2.props.defaultValueProp];
+	            if (_this2.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
+	              if (nextProps !== true) {
+	                _this2.originalVal = _this2.baseProps[toUseProps.defaultValueProp];
+	              }
+	              _this2.currentChildValue = _this2.baseProps[toUseProps.defaultValueProp];
 	            }
 	          }
 
-	          var oldOnChange = _this2.baseProps[_this2.props.onChangeCallback];
-	          _this2.baseProps[_this2.props.onChangeCallback] = function () {
+	          var oldOnChange = _this2.baseProps[toUseProps.onChangeCallback];
+	          _this2.baseProps[toUseProps.onChangeCallback] = function () {
 	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 	              args[_key] = arguments[_key];
 	            }
@@ -295,7 +320,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this2.childModified = true;
 	            if (!_this2.absorbing) {
 	              _this2.absorbing = true;
-	              _this2.baseProps[_this2.props.valueProp] = rArgs;
+	              _this2.baseProps[toUseProps.valueProp] = rArgs;
 	              _this2.currentChildValue = rArgs;
 	              _this2.testValidity(rArgs);
 	              if (oldOnChange) {
@@ -304,7 +329,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              _this2.absorbing = false;
 	            }
 	          };
-	          var theComponent = _react2.default.cloneElement(_this2.props.children, _this2.baseProps);
+	          var theComponent = _react2.default.cloneElement(toUseProps.children, _this2.baseProps);
 	          _this2.setState({
 	            childCompoentToRender: theComponent,
 	            unControlledChild: isUncontrolled
@@ -376,7 +401,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.state.childCompoentToRender ? this.state.childCompoentToRender : "",
 	          !getAllSupportedComponent()[this.typeOfCompnent].errorPropName && this.state.isValid === false ? _react2.default.createElement(
 	            "div",
-	            { style: Object.assign({}, { color: "red" }, this.props.errorStyle) },
+	            { style: Object.assign({}, { color: "red", fontSize: "12px", position: "absolute" }, this.props.errorStyle) },
 	            this.state.errorText
 	          ) : ""
 	        );
@@ -399,14 +424,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  group: _react.PropTypes.string,
 	  valueProp: _react.PropTypes.string,
 	  defaultValueProp: _react.PropTypes.string,
-	  errorStyle: _react.PropTypes.object
+	  errorStyle: _react.PropTypes.object,
+	  closures: _react.PropTypes.array
 	};
 
 	Validation.defaultProps = {
 	  onChangeCallback: "onChange",
 	  valueProp: "value",
 	  defaultValueProp: "defaultValue",
-	  errorStyle: {}
+	  errorStyle: {},
+	  closures: {}
 	};
 
 	exports.Validation = Validation;

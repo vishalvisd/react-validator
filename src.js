@@ -134,6 +134,7 @@ class Validation extends Component {
   }
 
   componentWillReceiveProps(props){
+    let freshRendered = false;
     if (this.state.unsupported !== true){
       if (this.state.unControlledChild === false){
         let isDerivedValueComing = false;
@@ -144,9 +145,23 @@ class Validation extends Component {
           if (!(_.isEqual(this.currentChildValue, props.children.props[this.props.valueProp]))){
             this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
             this.currentChildValue = props.children.props[this.props.valueProp];
+            freshRendered = true;
             this.testValidity(props.children.props.value);
           }
         }
+      }
+    }
+    if (Object.keys(this.closureValues).length > 0 && freshRendered === false){
+      //match closures
+      let requireRender = false;
+      _.forOwn(this.closureValues, (cVariableValue, cVariable)=>{
+        if (!(_.isEqual(cVariableValue, props.closures[cVariable]))){
+          requireRender = true;
+        }
+      });
+      if (requireRender){
+        this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent,
+          getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, false, props);
       }
     }
   }
@@ -180,34 +195,45 @@ class Validation extends Component {
     }
   }
 
-  mountingSetup(valueFromArgs, argsToPassToActualHandler, unsupportedFlag){
+  mountingSetup(valueFromArgs, argsToPassToActualHandler, unsupportedFlag, nextProps){
+    let toUseProps = nextProps ? nextProps : this.props;
     if (unsupportedFlag === true){
       this.setState({
-        childCompoentToRender: this.props.children,
+        childCompoentToRender: toUseProps.children,
         unsupported: unsupportedFlag
       });
     } else {
-      this.baseProps = _.cloneDeep(this.props.children.props);
+      this.closureValues = {};
+      if (Object.keys(toUseProps.closures).length > 0) {
+        _.forOwn(toUseProps.closures, (cVariableValue, cVariable) => {
+          this.closureValues[cVariable] = cVariableValue;
+        });
+      }
+      this.baseProps = _.cloneDeep(toUseProps.children.props);
       let isUncontrolled = true;
-      if (this.baseProps[this.props.valueProp] !== undefined){
+      if (this.baseProps.hasOwnProperty(toUseProps.valueProp)){
         isUncontrolled = false;
-        this.originalVal = this.baseProps[this.props.valueProp];
-        this.currentChildValue = this.baseProps[this.props.valueProp];
+        if (nextProps !== true){
+          this.originalVal = this.baseProps[toUseProps.valueProp];
+        }
+        this.currentChildValue = this.baseProps[toUseProps.valueProp];
       } else {
         //try with default prop
-        if (this.baseProps[this.props.defaultValueProp] !== undefined){
-          this.originalVal = this.baseProps[this.props.defaultValueProp];
-          this.currentChildValue = this.baseProps[this.props.defaultValueProp];
+        if (this.baseProps.hasOwnProperty(toUseProps.defaultValueProp)){
+          if (nextProps !== true){
+            this.originalVal = this.baseProps[toUseProps.defaultValueProp];
+          }
+          this.currentChildValue = this.baseProps[toUseProps.defaultValueProp];
         }
       }
 
-      let oldOnChange = this.baseProps[this.props.onChangeCallback];
-      this.baseProps[this.props.onChangeCallback] = (...args)=>{
+      let oldOnChange = this.baseProps[toUseProps.onChangeCallback];
+      this.baseProps[toUseProps.onChangeCallback] = (...args)=>{
         let rArgs = valueFromArgs(args);
         this.childModified = true;
         if (!this.absorbing){
           this.absorbing = true;
-          this.baseProps[this.props.valueProp] = rArgs;
+          this.baseProps[toUseProps.valueProp] = rArgs;
           this.currentChildValue = rArgs;
           this.testValidity(rArgs);
           if (oldOnChange) {
@@ -216,7 +242,7 @@ class Validation extends Component {
           this.absorbing = false;
         }
       };
-      let theComponent = React.cloneElement(this.props.children, this.baseProps);
+      let theComponent = React.cloneElement(toUseProps.children, this.baseProps);
       this.setState({
         childCompoentToRender: theComponent,
         unControlledChild: isUncontrolled
@@ -281,7 +307,7 @@ class Validation extends Component {
         {
           this.state.childCompoentToRender ? this.state.childCompoentToRender : ""
         }{
-          (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ? <div style={Object.assign({}, {color: "red"}, this.props.errorStyle)}>
+          (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ? <div style={Object.assign({}, {color: "red", fontSize: "12px", position: "absolute"}, this.props.errorStyle)}>
             {
               this.state.errorText
             }
@@ -302,14 +328,16 @@ Validation.propTypes = {
   group: PropTypes.string,
   valueProp: PropTypes.string,
   defaultValueProp: PropTypes.string,
-  errorStyle: PropTypes.object
+  errorStyle: PropTypes.object,
+  closures: PropTypes.array
 };
 
 Validation.defaultProps = {
   onChangeCallback: "onChange",
   valueProp: "value",
   defaultValueProp: "defaultValue",
-  errorStyle: {}
+  errorStyle: {},
+  closures: {}
 };
 
 export {Validation, fieldValidatorCore};
