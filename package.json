@@ -23,10 +23,11 @@
   },
   "homepage": "https://github.com/vishalvisd/react-validator#readme",
   "dependencies": {
-    "loadash": "0.0.1"
+    "prop-types": "^15.5.8",
+    "react": "^15.0.0"
   },
   "peerDependencies": {
-    "react": "^15.0.0"
+    "loadash": "0.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",
