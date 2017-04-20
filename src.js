@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react";
+import React, { Component } from "react";
+import PropTypes from 'prop-types';
 import _ from "lodash";
 
 function generateUUID() {
@@ -175,7 +176,7 @@ class Validation extends Component {
         this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
       } else {
         console.error("Field-Validator",
-          `${this.typeOfCompnent} is currently not supported by field-validator, 
+          `${this.typeOfCompnent} is currently not supported by field-validator,
           Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs`);
         console.info("Field-Validator", `Ignoring ${this.typeOfCompnent}, and it will work as if it was not wraped with Validation tag`);
         this.mountingSetup(null, null, true);
@@ -329,7 +330,7 @@ Validation.propTypes = {
   valueProp: PropTypes.string,
   defaultValueProp: PropTypes.string,
   errorStyle: PropTypes.object,
-  closures: PropTypes.array
+  closures: PropTypes.object
 };
 
 Validation.defaultProps = {
