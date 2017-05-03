@@ -147,7 +147,7 @@ class Validation extends Component {
             this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
             this.currentChildValue = props.children.props[this.props.valueProp];
             freshRendered = true;
-            this.testValidity(props.children.props.value);
+            this.testValidity(this.currentChildValue);
           }
         }
       }
