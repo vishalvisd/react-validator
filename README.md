@@ -44,33 +44,36 @@ Using ref validity of a paritcular filed at any point can be found.
 
     import {Validation, fieldValidatorCore} from "react-validation-framework";
     import validator from "validator";
-    <Validation group="myGroup1"
-    		    closures={{area}}
-		        validators={[
-				{
-		         validator: (val) => !validator.isEmpty(val),
-		         errorMessage: "Cannot be left empty"
-		        }, {
-	             validator: (val) => validator.isNumeric(val),
-	             errorMessage: "Should be a numeric number"
-	            }, {
-	             validator: (val) => {
-	               if (parseInt(val) > 100){
-	                   return false;
-	               } else {
-	                   return true;
-	               }
-	             errorMessage: "Must be any number less than 100"
-                }}]}>
-                <TextField value={this.state.value}
-                           className={styles.inputStyles}
-                           style={{width: "100%"}}
-                           onChange={
-                            (evt)=>{
-                              console.log("you have typed: ", evt.target.value);
-			                  console.log("this value is defined in differenet scope and hence added to closures prop", area);
-                            }
-                           }/>
+    <Validation 
+        group="myGroup1"
+        closures={{area, foo: this.state.somevalue.value1}}
+	validators={[{
+	  validator: (val) => !validator.isEmpty(val),
+	  errorMessage: "Cannot be left empty"
+	}, {
+          validator: (val) => validator.isNumeric(val),
+          errorMessage: "Should be a numeric number"
+        }, {
+          validator: (val) => {
+             if (parseInt(val) > 100){
+	       return false;
+             } else {
+	       return true;
+             }
+          errorMessage: "Must be any number less than 100"
+	  }
+        }]}>
+	<TextField 
+	   value={this.state.value}
+	   className={styles.inputStyles}
+	   style={{width: "100%"}}
+           minHeight={this.state.somevalue.value1} //foo
+	   onChange={
+	    (evt)=>{
+	      console.log("you have typed: ", evt.target.value);
+	      console.log("this value is defined in differenet scope and hence added to closures prop", area);
+           }
+         }/>
     </Validation>
 
 
