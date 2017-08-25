@@ -80,7 +80,7 @@ Using ref validity of a paritcular filed at any point can be found.
 ***Notes***
 
 1- Validation accepts an array of validators functions, each with their respective error messages.
-The order is important and the field is validated as per the order. For validator function third-party library can be used like - [validator](github.com/chriso/validator.js),
+The order is important and the field is validated as per the order. For validator function third-party library can be used like - [validator](http://github.com/chriso/validator.js/),
 as like above, which has whole bunch of well tested regex, like isEmpty, isEmail,
 etc or we can supply our own function for specific case to validate.
 
