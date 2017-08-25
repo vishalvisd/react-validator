@@ -3,7 +3,7 @@
 React Validation Framework
 ==========================
 
-Validating fields on UI (client side validation) a lot simpler.
+Validating fields on UI (client side validation) a lot simpler. 
 
 ***
 
@@ -47,22 +47,24 @@ Using ref validity of a paritcular filed at any point can be found.
     <Validation 
         group="myGroup1"
         closures={{area, foo: this.state.somevalue.value1}}
-	validators={[{
-	  validator: (val) => !validator.isEmpty(val),
-	  errorMessage: "Cannot be left empty"
-	}, {
-          validator: (val) => validator.isNumeric(val),
-          errorMessage: "Should be a numeric number"
-        }, {
-          validator: (val) => {
-             if (parseInt(val) > 100){
-	       return false;
-             } else {
-	       return true;
-             }
-          errorMessage: "Must be any number less than 100"
-	  }
-        }]}>
+	validators={[
+	      {
+		validator: (val) => !validator.isEmpty(val),
+		errorMessage: "Cannot be left empty"
+	      }, {
+		validator: (val) => validator.isNumeric(val),
+		errorMessage: "Should be a numeric number"
+	      }, {
+		validator: (val) => {
+		  if (parseInt(val) > 100){
+		    return false;
+		  } else {
+		    return true;
+		  }
+		},
+		errorMessage: "Must be any number less than 100"
+	      }
+        ]}>
 	<TextField 
 	   value={this.state.value}
 	   className={styles.inputStyles}
