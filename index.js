@@ -52,7 +52,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -76,6 +76,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _lodash2 = _interopRequireDefault(_lodash);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -223,6 +225,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this.state.unControlledChild === false) {
 	          var isDerivedValueComing = false;
 	          if (!_lodash2.default.isEqual(this.originalVal, props.children.props[this.props.valueProp])) {
+	            this.originalVal = props.children.props[this.props.valueProp];
 	            isDerivedValueComing = true;
 	          }
 	          if (this.childModified === true || isDerivedValueComing) {
@@ -230,7 +233,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
 	              this.currentChildValue = props.children.props[this.props.valueProp];
 	              freshRendered = true;
-	              this.testValidity(props.children.props.value);
+	              this.testValidity(this.currentChildValue);
 	            }
 	          }
 	        }
@@ -289,105 +292,146 @@ return /******/ (function(modules) { // webpackBootstrap
 	          unsupported: unsupportedFlag
 	        });
 	      } else {
-	        this.closureValues = {};
-	        if (Object.keys(toUseProps.closures).length > 0) {
-	          _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
-	            _this2.closureValues[cVariable] = cVariableValue;
-	          });
-	        }
-	        this.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
-	        var isUncontrolled = true;
-	        if (this.baseProps.hasOwnProperty(toUseProps.valueProp)) {
-	          isUncontrolled = false;
-	          if (nextProps !== true) {
-	            this.originalVal = this.baseProps[toUseProps.valueProp];
+	        (function () {
+	          _this2.closureValues = {};
+	          if (Object.keys(toUseProps.closures).length > 0) {
+	            _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
+	              _this2.closureValues[cVariable] = cVariableValue;
+	            });
 	          }
-	          this.currentChildValue = this.baseProps[toUseProps.valueProp];
-	        } else {
-	          //try with default prop
-	          if (this.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
+	          _this2.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
+	          var isUncontrolled = true;
+	          if (_this2.baseProps.hasOwnProperty(toUseProps.valueProp)) {
+	            isUncontrolled = false;
 	            if (nextProps !== true) {
-	              this.originalVal = this.baseProps[toUseProps.defaultValueProp];
+	              _this2.originalVal = _this2.baseProps[toUseProps.valueProp];
 	            }
-	            this.currentChildValue = this.baseProps[toUseProps.defaultValueProp];
-	          }
-	        }
-
-	        var oldOnChange = this.baseProps[toUseProps.onChangeCallback];
-	        this.baseProps[toUseProps.onChangeCallback] = function () {
-	          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	            args[_key] = arguments[_key];
-	          }
-
-	          var rArgs = valueFromArgs(args);
-	          _this2.childModified = true;
-	          if (!_this2.absorbing) {
-	            _this2.absorbing = true;
-	            _this2.baseProps[toUseProps.valueProp] = rArgs;
-	            _this2.currentChildValue = rArgs;
-	            _this2.testValidity(rArgs);
-	            if (oldOnChange) {
-	              argsToPassToActualHandler(oldOnChange, args);
+	            _this2.currentChildValue = _this2.baseProps[toUseProps.valueProp];
+	          } else {
+	            //try with default prop
+	            if (_this2.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
+	              if (nextProps !== true) {
+	                _this2.originalVal = _this2.baseProps[toUseProps.defaultValueProp];
+	              }
+	              _this2.currentChildValue = _this2.baseProps[toUseProps.defaultValueProp];
 	            }
-	            _this2.absorbing = false;
 	          }
-	        };
-	        var theComponent = _react2.default.cloneElement(toUseProps.children, this.baseProps);
-	        this.setState({
-	          childCompoentToRender: theComponent,
-	          unControlledChild: isUncontrolled
-	        });
+
+	          var oldOnChange = _this2.baseProps[toUseProps.onChangeCallback];
+	          _this2.baseProps[toUseProps.onChangeCallback] = function () {
+	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	              args[_key] = arguments[_key];
+	            }
+
+	            var rArgs = valueFromArgs(args);
+	            _this2.childModified = true;
+	            if (!_this2.absorbing) {
+	              _this2.absorbing = true;
+	              _this2.baseProps[toUseProps.valueProp] = rArgs;
+	              _this2.currentChildValue = rArgs;
+	              _this2.testValidity(rArgs);
+	              if (oldOnChange) {
+	                argsToPassToActualHandler(oldOnChange, args);
+	              }
+	              _this2.absorbing = false;
+	            }
+	          };
+	          var theComponent = _react2.default.cloneElement(toUseProps.children, _this2.baseProps);
+	          _this2.setState({
+	            childCompoentToRender: theComponent,
+	            unControlledChild: isUncontrolled
+	          });
+	        })();
 	      }
 	    }
 	  }, {
 	    key: "testValidity",
 	    value: function testValidity(val) {
-	      var res = {
-	        isValid: true,
-	        errorMessage: null
-	      };
+	      var _this3 = this;
+
+	      var self = this;
 	      try {
-	        this.props.validators.every(function (v) {
-	          if (v.validator(val) === false) {
-	            res.isValid = false;
-	            res.errorMessage = v.errorMessage;
-	            return false;
+	        return new Promise(function (resolve) {
+	          var backToBucket = 0;
+	          self.props.validators.forEach(function () {
+	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(v, i) {
+	              var validi;
+	              return regeneratorRuntime.wrap(function _callee$(_context) {
+	                while (1) {
+	                  switch (_context.prev = _context.next) {
+	                    case 0:
+	                      _context.next = 2;
+	                      return v.validator(val);
+
+	                    case 2:
+	                      validi = _context.sent;
+
+	                      if (validi === false) {
+	                        resolve({
+	                          isValid: false,
+	                          errorMessage: v.errorMessage
+	                        });
+	                      }
+	                      backToBucket++;
+	                      if (backToBucket === self.props.validators.length) {
+	                        if (validi === false) {
+	                          resolve({
+	                            isValid: false,
+	                            errorMessage: v.errorMessage
+	                          });
+	                        } else {
+	                          resolve({
+	                            isValid: true
+	                          });
+	                        }
+	                      }
+
+	                    case 6:
+	                    case "end":
+	                      return _context.stop();
+	                  }
+	                }
+	              }, _callee, _this3);
+	            }));
+
+	            return function (_x, _x2) {
+	              return _ref.apply(this, arguments);
+	            };
+	          }());
+	        }).then(function (res) {
+	          if (res.isValid === false) {
+	            if (getAllSupportedComponent()[self.typeOfCompnent].errorPropName) {
+	              self.baseProps[getAllSupportedComponent()[self.typeOfCompnent].errorPropName] = res.errorMessage;
+	            }
+	            self.setState({
+	              childCompoentToRender: _react2.default.cloneElement(self.props.children, self.baseProps),
+	              isValid: false,
+	              errorText: res.errorMessage
+	            });
 	          } else {
-	            return true;
+	            if (getAllSupportedComponent()[self.typeOfCompnent].errorPropName) {
+	              self.baseProps[getAllSupportedComponent()[self.typeOfCompnent].errorPropName] = null;
+	            }
+	            self.setState({
+	              childCompoentToRender: _react2.default.cloneElement(self.props.children, self.baseProps),
+	              isValid: true,
+	              errorText: null
+	            });
 	          }
+	          return res.isValid;
 	        });
 	      } catch (err) {
 	        console.error(err);
 	      }
-	      if (res.isValid === false) {
-	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
-	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorMessage;
-	        }
-	        this.setState({
-	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
-	          isValid: false,
-	          errorText: res.errorMessage
-	        });
-	      } else {
-	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
-	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
-	        }
-	        this.setState({
-	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
-	          isValid: true,
-	          errorText: null
-	        });
-	      }
-	      return res.isValid;
 	    }
 	  }, {
 	    key: "componentWillUnmount",
 	    value: function componentWillUnmount() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      if (this.props.group) {
 	        _lodash2.default.remove(groups[this.props.group], function (v) {
-	          return v.id === _this3.state.id;
+	          return v.id === _this4.state.id;
 	        });
 	      }
 	    }
@@ -441,25 +485,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Validation = Validation;
 	exports.fieldValidatorCore = fieldValidatorCore;
 
-/***/ }),
+/***/ },
 /* 1 */
-/***/ (function(module, exports) {
+/***/ function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
-/***/ }),
+/***/ },
 /* 2 */
-/***/ (function(module, exports) {
+/***/ function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
-/***/ }),
+/***/ },
 /* 3 */
-/***/ (function(module, exports) {
+/***/ function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
 
-/***/ })
+/***/ }
 /******/ ])
 });
 ;

@@ -140,6 +140,7 @@ class Validation extends Component {
       if (this.state.unControlledChild === false){
         let isDerivedValueComing = false;
         if (!(_.isEqual(this.originalVal, props.children.props[this.props.valueProp]))){
+          this.originalVal = props.children.props[this.props.valueProp];
           isDerivedValueComing = true;
         }
         if (this.childModified === true || isDerivedValueComing){
@@ -252,43 +253,58 @@ class Validation extends Component {
   }
 
   testValidity(val){
-    let res = {
-      isValid: true,
-      errorMessage: null
-    };
+    var self = this;
     try {
-      this.props.validators.every((v)=>{
-        if (v.validator(val) === false){
-          res.isValid = false;
-          res.errorMessage = v.errorMessage;
-          return false;
+      return new Promise((resolve) => {
+        let backToBucket = 0;
+        self.props.validators.forEach(async (v, i) => {
+          let validi = await v.validator(val);
+          if (validi === false){
+            resolve({
+              isValid: false,
+              errorMessage: v.errorMessage
+            });
+          }
+          backToBucket++;
+          if (backToBucket === self.props.validators.length){
+            if (validi === false){
+              resolve({
+                isValid: false,
+                errorMessage: v.errorMessage
+              });
+            } else {
+              resolve({
+                isValid: true
+              });
+            }
+          }
+        });
+      }).then((res)=>{
+        if (res.isValid === false){
+          if (getAllSupportedComponent()[self.typeOfCompnent].errorPropName){
+            self.baseProps[getAllSupportedComponent()[self.typeOfCompnent].errorPropName] = res.errorMessage;
+          }
+          self.setState({
+            childCompoentToRender: React.cloneElement(self.props.children, self.baseProps),
+            isValid: false,
+            errorText: res.errorMessage
+          });
         } else {
-          return true;
+          if (getAllSupportedComponent()[self.typeOfCompnent].errorPropName){
+            self.baseProps[getAllSupportedComponent()[self.typeOfCompnent].errorPropName] = null;
+          }
+          self.setState({
+            childCompoentToRender: React.cloneElement(self.props.children, self.baseProps),
+            isValid: true,
+            errorText: null
+          });
         }
+        return res.isValid;
       });
     } catch (err) {
       console.error(err);
     }
-    if (res.isValid === false){
-      if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName){
-        this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorMessage;
-      }
-      this.setState({
-        childCompoentToRender: React.cloneElement(this.props.children, this.baseProps),
-        isValid: false,
-        errorText: res.errorMessage
-      });
-    } else {
-      if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName){
-        this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
-      }
-      this.setState({
-        childCompoentToRender: React.cloneElement(this.props.children, this.baseProps),
-        isValid: true,
-        errorText: null
-      });
-    }
-    return res.isValid;
+
   }
 
   componentWillUnmount(){
