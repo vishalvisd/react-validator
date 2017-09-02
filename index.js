@@ -77,8 +77,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -347,91 +345,52 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: "testValidity",
 	    value: function testValidity(val) {
-	      var _this3 = this;
-
-	      var self = this;
+	      var res = {
+	        isValid: true,
+	        errorMessage: null
+	      };
 	      try {
-	        return new Promise(function (resolve) {
-	          var backToBucket = 0;
-	          self.props.validators.forEach(function () {
-	            var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(v, i) {
-	              var validi;
-	              return regeneratorRuntime.wrap(function _callee$(_context) {
-	                while (1) {
-	                  switch (_context.prev = _context.next) {
-	                    case 0:
-	                      _context.next = 2;
-	                      return v.validator(val);
-
-	                    case 2:
-	                      validi = _context.sent;
-
-	                      if (validi === false) {
-	                        resolve({
-	                          isValid: false,
-	                          errorMessage: v.errorMessage
-	                        });
-	                      }
-	                      backToBucket++;
-	                      if (backToBucket === self.props.validators.length) {
-	                        if (validi === false) {
-	                          resolve({
-	                            isValid: false,
-	                            errorMessage: v.errorMessage
-	                          });
-	                        } else {
-	                          resolve({
-	                            isValid: true
-	                          });
-	                        }
-	                      }
-
-	                    case 6:
-	                    case "end":
-	                      return _context.stop();
-	                  }
-	                }
-	              }, _callee, _this3);
-	            }));
-
-	            return function (_x, _x2) {
-	              return _ref.apply(this, arguments);
-	            };
-	          }());
-	        }).then(function (res) {
-	          if (res.isValid === false) {
-	            if (getAllSupportedComponent()[self.typeOfCompnent].errorPropName) {
-	              self.baseProps[getAllSupportedComponent()[self.typeOfCompnent].errorPropName] = res.errorMessage;
-	            }
-	            self.setState({
-	              childCompoentToRender: _react2.default.cloneElement(self.props.children, self.baseProps),
-	              isValid: false,
-	              errorText: res.errorMessage
-	            });
+	        this.props.validators.every(function (v) {
+	          if (v.validator(val) === false) {
+	            res.isValid = false;
+	            res.errorMessage = v.errorMessage;
+	            return false;
 	          } else {
-	            if (getAllSupportedComponent()[self.typeOfCompnent].errorPropName) {
-	              self.baseProps[getAllSupportedComponent()[self.typeOfCompnent].errorPropName] = null;
-	            }
-	            self.setState({
-	              childCompoentToRender: _react2.default.cloneElement(self.props.children, self.baseProps),
-	              isValid: true,
-	              errorText: null
-	            });
+	            return true;
 	          }
-	          return res.isValid;
 	        });
 	      } catch (err) {
 	        console.error(err);
 	      }
+	      if (res.isValid === false) {
+	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorMessage;
+	        }
+	        this.setState({
+	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
+	          isValid: false,
+	          errorText: res.errorMessage
+	        });
+	      } else {
+	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
+	        }
+	        this.setState({
+	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
+	          isValid: true,
+	          errorText: null
+	        });
+	      }
+	      return res.isValid;
 	    }
 	  }, {
 	    key: "componentWillUnmount",
 	    value: function componentWillUnmount() {
-	      var _this4 = this;
+	      var _this3 = this;
 
 	      if (this.props.group) {
 	        _lodash2.default.remove(groups[this.props.group], function (v) {
-	          return v.id === _this4.state.id;
+	          return v.id === _this3.state.id;
 	        });
 	      }
 	    }
