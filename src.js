@@ -169,7 +169,15 @@ class Validation extends Component {
   }
 
   componentWillMount() {
-    this.typeOfCompnent = this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name;
+    if (this.props.tagName){
+      this.typeOfCompnent = this.props.tagName;
+    } else {
+      if (typeof this.props.children.type === "string"){
+        this.typeOfCompnent = this.props.children.type;
+      } else {
+        this.typeOfCompnent = this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name;
+      }
+    }
     if (userAddedComponents[this.typeOfCompnent] !== undefined){
       this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
     } else {
@@ -331,6 +339,7 @@ Validation.propTypes = {
   valueProp: PropTypes.string,
   defaultValueProp: PropTypes.string,
   errorStyle: PropTypes.object,
+  tagName: PropTypes.string,
   closures: PropTypes.object
 };
 
