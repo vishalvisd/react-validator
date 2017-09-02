@@ -59,6 +59,7 @@ Using ref validity of a paritcular filed at any point can be found.
 
   **closures**: an object set with variables, where object key is variable name, and value is the value of the variable. You must use this when component is dependent of value coming from its closure. 
 
+
 ***Real Code Example***
 ```
     import {Validation, fieldValidatorCore} from "react-validation-framework";
