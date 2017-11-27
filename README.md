@@ -24,6 +24,7 @@ npm i react-validation-framework --save
 Using ref validity of a paritcular filed at any point can be found.
 - If a component is not supported out of box, then support for your new/custom component can be added easily
 - Error Text style can be customized
+- Extremely lightweight ~12KB
 
 ***Basic Usage***
 
@@ -35,9 +36,29 @@ Using ref validity of a paritcular filed at any point can be found.
       valueProp={<optional, default is 'value'>}
       defaultValueProp={<optional, default is 'onChange'>}
       closures={<object>}
+      tagName="YourComponent"
       errorStyle={<optional>} >
         <YourComponent />
     </Validation>
+
+***Props***
+  
+  - **validators (Required)**: An Array of Objects - {validator: func, errorMessage: string} defining the condition for validity. Excuted in order,
+
+  - **onChangeCallback**: Provide the 'name' of change callback,
+
+  - **valueProp**:  Provide the name of 'value' prop for the component,
+
+  - **defaultValueProp**: Provide the name of 'default value' prop for the component,
+
+  - **group**: the name of the group in which this component belongs. Using fieldValidatorCore.checkGroup(<groupName>), validity of all components in the group as single boolen true or false can be determined. False means at least one component is invalid,
+
+  - **errorStyle**: Object specifying your custimized style to apply on the error message,
+
+  - **tagName**: Usefull while uglifying - provide the tagName of the component to prevent failue while uglifying,
+
+  - **closures**: an object set with variables, where object key is variable name, and value is the value of the variable. You must use this when component is dependent of value coming from its closure. 
+
 
 
 ***Real Code Example***
@@ -81,12 +102,12 @@ Using ref validity of a paritcular filed at any point can be found.
 ```
 ***Notes***
 
-1- Validation accepts an array of validators functions, each with their respective error messages.
+**1-** Validation accepts an array of validators functions, each with their respective error messages.
 The order is important and the field is validated as per the order. For validator function third-party library can be used like - [validator](http://github.com/chriso/validator.js/),
 as like above, which has whole bunch of well tested regex, like isEmpty, isEmail,
 etc or we can supply our own function for specific case to validate.
 
-2- “group” prop can be added to define the group in which the filed belongs.
+**2-** “group” prop can be added to define the group in which the filed belongs.
 Later the group name can be used to find whether a group of filed is valid or not like this :
 
     handleSubmit(){
@@ -103,7 +124,7 @@ Later the group name can be used to find whether a group of filed is valid or no
 
   or simply add a ref to the Validation tag and call the isValid method to find if the field is valid.
   
-  3- To add a new component
+  **3-** To add a new component
 
 Signature - 
 `fieldValidatorCore.addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName)`
@@ -126,7 +147,7 @@ add the component before your page component mounts, like
         }, "errorText");
       }
 
-4- (with 2.3.0), If any other prop other than value prop of your field component has value derived from upper scope/closure, ex - 'area' in onChange, it is better to added those closures in a prop called closures, otherwise, if the value changes you field componenet will still be having old value
+**4-** (with 2.3.0), If any other prop other than value prop of your field component has value derived from upper scope/closure, ex - 'area' in onChange, it is better to added those closures in a prop called closures, otherwise, if the value changes you field componenet will still be having old value
  
 
     <Validation group="ga1" closures={{area}} validators={...}>
@@ -148,5 +169,5 @@ add the component before your page component mounts, like
       />
     </Validation> 
 
-
+**5-** (with 4.0.0), set tagName prop as the tagName of your component to avoid failures while uglifying.
 
