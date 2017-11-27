@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import _ from "lodash";
 
 function generateUUID() {
@@ -129,9 +129,20 @@ class Validation extends Component {
     };
     this.testValidity = this.testValidity.bind(this);
   }
-
   get isValid() {
-    return this.testValidity(this.currentChildValue);
+    return this.testValidity(this.currentChildValue).isValid;
+  }
+
+  get errorMessage() {
+    return this.testValidity(this.currentChildValue).errorMessage;
+  }
+
+  get errorPropValue() {
+    return this.testValidity(this.currentChildValue).errorPropValue;
+  }
+
+  get isModified() {
+    return this.childModified;
   }
 
   componentWillReceiveProps(props){
@@ -140,7 +151,6 @@ class Validation extends Component {
       if (this.state.unControlledChild === false){
         let isDerivedValueComing = false;
         if (!(_.isEqual(this.originalVal, props.children.props[this.props.valueProp]))){
-          this.originalVal = props.children.props[this.props.valueProp];
           isDerivedValueComing = true;
         }
         if (this.childModified === true || isDerivedValueComing){
@@ -169,15 +179,7 @@ class Validation extends Component {
   }
 
   componentWillMount() {
-    if (this.props.tagName){
-      this.typeOfCompnent = this.props.tagName;
-    } else {
-      if (typeof this.props.children.type === "string"){
-        this.typeOfCompnent = this.props.children.type;
-      } else {
-        this.typeOfCompnent = this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name;
-      }
-    }
+    this.typeOfCompnent = this.props.componentTag ? this.props.componentTag : (this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name);
     if (userAddedComponents[this.typeOfCompnent] !== undefined){
       this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
     } else {
@@ -263,13 +265,15 @@ class Validation extends Component {
   testValidity(val){
     let res = {
       isValid: true,
-      errorMessage: null
+      errorMessage: null,
+      errorPropValue: null
     };
     try {
       this.props.validators.every((v)=>{
         if (v.validator(val) === false){
           res.isValid = false;
           res.errorMessage = v.errorMessage;
+          res.errorPropValue = v.errorPropValue ? v.errorPropValue : v.errorMessage;
           return false;
         } else {
           return true;
@@ -280,7 +284,7 @@ class Validation extends Component {
     }
     if (res.isValid === false){
       if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName){
-        this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorMessage;
+        this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
       }
       this.setState({
         childCompoentToRender: React.cloneElement(this.props.children, this.baseProps),
@@ -297,7 +301,7 @@ class Validation extends Component {
         errorText: null
       });
     }
-    return res.isValid;
+    return res;
   }
 
   componentWillUnmount(){
@@ -339,8 +343,8 @@ Validation.propTypes = {
   valueProp: PropTypes.string,
   defaultValueProp: PropTypes.string,
   errorStyle: PropTypes.object,
-  tagName: PropTypes.string,
-  closures: PropTypes.object
+  closures: PropTypes.object,
+  componentTag: PropTypes.string
 };
 
 Validation.defaultProps = {
