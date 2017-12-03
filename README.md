@@ -45,6 +45,8 @@ Using ref validity of a paritcular filed at any point can be found.
   
   - **validators (Required)**: An Array of Objects - {validator: func, errorMessage: string} defining the condition for validity. Excuted in order,
 
+  - **componentTag (Required)**: Tag name of Component. When wrapping high order component you should specify the component tag name to avoid unexpected behaviour,
+
   - **onChangeCallback**: Provide the 'name' of change callback,
 
   - **valueProp**:  Provide the name of 'value' prop for the component,
