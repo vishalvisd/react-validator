@@ -173,3 +173,9 @@ add the component before your page component mounts, like
 
 **5-** (with 4.0.0), set tagName prop as the tagName of your component to avoid failures while uglifying.
 
+
+**Final Note**
+Example usage are put in the examples directory.
+Contributors are ofcourse welcomed. PR will be reviewed and merged with few hours.
+
+
