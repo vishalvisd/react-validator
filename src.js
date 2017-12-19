@@ -174,6 +174,8 @@ class Validation extends Component {
       if (requireRender){
         this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent,
           getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, false, props);
+        //also test validity if closure changes -- added if any validation dependes on closure values
+        this.testValidity(this.currentChildValue);
       }
     }
   }
