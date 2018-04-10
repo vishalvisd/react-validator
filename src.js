@@ -247,11 +247,15 @@ class Validation extends Component {
         this.childModified = true;
         if (!this.absorbing){
           this.absorbing = true;
-          this.baseProps[toUseProps.valueProp] = rArgs;
-          this.currentChildValue = rArgs;
-          this.testValidity(rArgs);
-          if (oldOnChange) {
-            argsToPassToActualHandler(oldOnChange, args);
+          try {
+            this.baseProps[toUseProps.valueProp] = rArgs;
+            this.currentChildValue = rArgs;
+            this.testValidity(rArgs);
+            if (oldOnChange) {
+              argsToPassToActualHandler(oldOnChange, args);
+            }
+          } catch (er){
+            this.absorbing = false;
           }
           this.absorbing = false;
         }

@@ -326,11 +326,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _this2.childModified = true;
 	            if (!_this2.absorbing) {
 	              _this2.absorbing = true;
-	              _this2.baseProps[toUseProps.valueProp] = rArgs;
-	              _this2.currentChildValue = rArgs;
-	              _this2.testValidity(rArgs);
-	              if (oldOnChange) {
-	                argsToPassToActualHandler(oldOnChange, args);
+	              try {
+	                _this2.baseProps[toUseProps.valueProp] = rArgs;
+	                _this2.currentChildValue = rArgs;
+	                _this2.testValidity(rArgs);
+	                if (oldOnChange) {
+	                  argsToPassToActualHandler(oldOnChange, args);
+	                }
+	              } catch (er) {
+	                _this2.absorbing = false;
 	              }
 	              _this2.absorbing = false;
 	            }
