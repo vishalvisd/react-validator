@@ -16,13 +16,6 @@ module.exports = [{
       }
     ]
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      minimize: true,
-      compress: true,
-      sourceMap: true
-    })
-  ],
   externals: {
     lodash: {
       amd: "lodash",
