@@ -1,6 +1,6 @@
 {
   "name": "react-validation-framework",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "description": "Framework to validate fields, supports all components including material-ui components",
   "main": "index.js",
   "scripts": {
