@@ -1,1 +1,487 @@
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(require("react"),require("prop-types"),require("lodash")):"function"==typeof define&&define.amd?define(["react","prop-types","lodash"],t):"object"==typeof exports?exports.index=t(require("react"),require("prop-types"),require("lodash")):e.index=t(e.React,e.PropTypes,e._)}(this,function(e,t,r){return function(e){function t(o){if(r[o])return r[o].exports;var n=r[o]={exports:{},id:o,loaded:!1};return e[o].call(n.exports,n,n.exports,t),n.loaded=!0,n.exports}var r={};return t.m=e,t.c=r,t.p="",t(0)}([function(e,t,r){"use strict";function o(e){return e&&e.__esModule?e:{default:e}}function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function a(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function l(){var e=16,t=(new Date).getTime();window.performance&&"function"==typeof window.performance.now&&(t+=performance.now());var r="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(r){var o=(t+Math.random()*e)%e|0;t=Math.floor(t/e);var n=3,i=o&n,a=8;return("x"===r?o:i|a).toString(e)});return r}function s(){return Object.assign({},y,C)}Object.defineProperty(t,"__esModule",{value:!0}),t.fieldValidatorCore=t.Validation=void 0;var p=function(){function e(e,t){for(var r=0;r<t.length;r++){var o=t[r];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(e,o.key,o)}}return function(t,r,o){return r&&e(t.prototype,r),o&&e(t,o),t}}(),u=r(1),c=o(u),d=r(2),h=o(d),f=r(3),m=o(f),g={},C={},y={TextField:{getValueFromChangeEvent:function(e){return e[0].target.value},changeCallBackCaller:function(e,t){e(t[0])},errorPropName:"errorText"},SelectField:{getValueFromChangeEvent:function(e){return e[1]},changeCallBackCaller:function(e,t){e(t[0],t[1],t[2])},errorPropName:"errorText"},DateRangePicker:{getValueFromChangeEvent:function(e){return e[0]},changeCallBackCaller:function(e,t){e(t[0])},errorPropName:"errorText"},DatePicker:{getValueFromChangeEvent:function(e){return e[1]},changeCallBackCaller:function(e,t){e(t,t[1])}},Select:{getValueFromChangeEvent:function(e){return e[0]},changeCallBackCaller:function(e,t){e(t[0])}}},v={addSupport:function(e,t,r,o){C[e]={getValueFromChangeEvent:t,changeCallBackCaller:r,errorPropName:o}},removeSupport:function(e){void 0!==C[e]?delete C.name:console.info("Field-Validator","removeComponent: didn't find the component")},getAllCurrentlySupported:function(){return s()},checkGroup:function(e){var t=!0,r={isValid:!0,validCompponents:[],inValidComponents:[]},o=g[e];return void 0===o?t=!0:o.forEach(function(e){var o=e.component;o.isValid===!1?(t=!1,r.inValidComponents.push(o.props.children)):r.validCompponents.push(o.props.children)}),r.isValid=t,r}},V=function(e){function t(e){n(this,t);var r=i(this,(t.__proto__||Object.getPrototypeOf(t)).call(this,e));return r.state={childCompoentToRender:null,unControlledChild:!0,isValid:!0,id:l()},r.testValidity=r.testValidity.bind(r),r}return a(t,e),p(t,[{key:"componentWillReceiveProps",value:function(e){var t=!1;if(this.state.unsupported!==!0&&this.state.unControlledChild===!1){var r=!1;m.default.isEqual(this.originalVal,e.children.props[this.props.valueProp])||(r=!0),(this.childModified===!0||r)&&(m.default.isEqual(this.currentChildValue,e.children.props[this.props.valueProp])||(this.baseProps[this.props.valueProp]=e.children.props[this.props.valueProp],this.currentChildValue=e.children.props[this.props.valueProp],t=!0,this.testValidity(this.currentChildValue)))}if(Object.keys(this.closureValues).length>0&&t===!1){var o=!1;m.default.forOwn(this.closureValues,function(t,r){m.default.isEqual(t,e.closures[r])||(o=!0)}),o&&this.mountingSetup(s()[this.typeOfCompnent].getValueFromChangeEvent,s()[this.typeOfCompnent].changeCallBackCaller,!1,e)}}},{key:"componentWillMount",value:function(){this.typeOfCompnent=this.props.componentTag?this.props.componentTag:this.props.children.type.displayName?this.props.children.type.displayName:this.props.children.type.name,void 0!==C[this.typeOfCompnent]?this.mountingSetup(C[this.typeOfCompnent].getValueFromChangeEvent,C[this.typeOfCompnent].changeCallBackCaller):void 0!==y[this.typeOfCompnent]?this.mountingSetup(y[this.typeOfCompnent].getValueFromChangeEvent,y[this.typeOfCompnent].changeCallBackCaller):(console.error("Field-Validator",this.typeOfCompnent+" is currently not supported by field-validator,\n          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs"),console.info("Field-Validator","Ignoring "+this.typeOfCompnent+", and it will work as if it was not wraped with Validation tag"),this.mountingSetup(null,null,!0))}},{key:"componentDidMount",value:function(){this.props.group&&this.state.unsupported!==!0&&(void 0===g[this.props.group]&&(g[this.props.group]=[]),g[this.props.group].push({id:this.state.id,component:this}))}},{key:"mountingSetup",value:function(e,t,r,o){var n=this,i=o?o:this.props;r===!0?this.setState({childCompoentToRender:i.children,unsupported:r}):!function(){n.closureValues={},Object.keys(i.closures).length>0&&m.default.forOwn(i.closures,function(e,t){n.closureValues[t]=e}),n.baseProps=m.default.cloneDeep(i.children.props);var r=!0;n.baseProps.hasOwnProperty(i.valueProp)?(r=!1,o!==!0&&(n.originalVal=n.baseProps[i.valueProp]),n.currentChildValue=n.baseProps[i.valueProp]):n.baseProps.hasOwnProperty(i.defaultValueProp)&&(o!==!0&&(n.originalVal=n.baseProps[i.defaultValueProp]),n.currentChildValue=n.baseProps[i.defaultValueProp]);var a=n.baseProps[i.onChangeCallback];n.baseProps[i.onChangeCallback]=function(){for(var r=arguments.length,o=Array(r),l=0;l<r;l++)o[l]=arguments[l];var s=e(o);n.childModified=!0,n.absorbing||(n.absorbing=!0,n.baseProps[i.valueProp]=s,n.currentChildValue=s,n.testValidity(s),a&&t(a,o),n.absorbing=!1)};var l=c.default.cloneElement(i.children,n.baseProps);n.setState({childCompoentToRender:l,unControlledChild:r})}()}},{key:"testValidity",value:function(e){var t={isValid:!0,errorMessage:null,errorPropValue:null};try{this.props.validators.every(function(r){return r.validator(e)!==!1||(t.isValid=!1,t.errorMessage=r.errorMessage,t.errorPropValue=r.errorPropValue?r.errorPropValue:r.errorMessage,!1)})}catch(e){console.error(e)}return t.isValid===!1?(s()[this.typeOfCompnent].errorPropName&&(this.baseProps[s()[this.typeOfCompnent].errorPropName]=t.errorPropValue),this.setState({childCompoentToRender:c.default.cloneElement(this.props.children,this.baseProps),isValid:!1,errorText:t.errorMessage})):(s()[this.typeOfCompnent].errorPropName&&(this.baseProps[s()[this.typeOfCompnent].errorPropName]=null),this.setState({childCompoentToRender:c.default.cloneElement(this.props.children,this.baseProps),isValid:!0,errorText:null})),t}},{key:"componentWillUnmount",value:function(){var e=this;this.props.group&&m.default.remove(g[this.props.group],function(t){return t.id===e.state.id})}},{key:"render",value:function(){return this.state.unsupported===!0?this.props.children:c.default.createElement("span",null,this.state.childCompoentToRender?this.state.childCompoentToRender:"",s()[this.typeOfCompnent].errorPropName||this.state.isValid!==!1?"":c.default.createElement("div",{style:Object.assign({},{color:"red",fontSize:"12px",position:"absolute"},this.props.errorStyle)},this.state.errorText))}},{key:"isValid",get:function(){return this.testValidity(this.currentChildValue).isValid}},{key:"errorMessage",get:function(){return this.testValidity(this.currentChildValue).errorMessage}},{key:"errorPropValue",get:function(){return this.testValidity(this.currentChildValue).errorPropValue}},{key:"isModified",get:function(){return this.childModified}}]),t}(u.Component);V.propTypes={children:h.default.oneOfType([h.default.element]),validators:h.default.array.isRequired,onChangeCallback:h.default.string,group:h.default.string,valueProp:h.default.string,defaultValueProp:h.default.string,errorStyle:h.default.object,closures:h.default.object,componentTag:h.default.string},V.defaultProps={onChangeCallback:"onChange",valueProp:"value",defaultValueProp:"defaultValue",errorStyle:{},closures:{}},t.Validation=V,t.fieldValidatorCore=v},function(t,r){t.exports=e},function(e,r){e.exports=t},function(e,t){e.exports=r}])});
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory(require("react"), require("prop-types"), require("lodash"));
+	else if(typeof define === 'function' && define.amd)
+		define(["react", "prop-types", "lodash"], factory);
+	else if(typeof exports === 'object')
+		exports["index"] = factory(require("react"), require("prop-types"), require("lodash"));
+	else
+		root["index"] = factory(root["React"], root["PropTypes"], root["_"]);
+})(this, function(__WEBPACK_EXTERNAL_MODULE_1__, __WEBPACK_EXTERNAL_MODULE_2__, __WEBPACK_EXTERNAL_MODULE_3__) {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.fieldValidatorCore = exports.Validation = undefined;
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _propTypes = __webpack_require__(2);
+
+	var _propTypes2 = _interopRequireDefault(_propTypes);
+
+	var _lodash = __webpack_require__(3);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function generateUUID() {
+	  var basex = 16;
+	  var d = new Date().getTime();
+	  if (window.performance && typeof window.performance.now === "function") {
+	    d += performance.now(); //use high-precision timer if available
+	  }
+	  var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+	    var r = (d + Math.random() * basex) % basex | 0;
+	    d = Math.floor(d / basex);
+	    var sr = 0x3;
+	    var srx = r & sr;
+	    var srx1 = 0x8;
+	    return (c === "x" ? r : srx | srx1).toString(basex);
+	  });
+	  return uuid;
+	}
+
+	var groups = {};
+	var userAddedComponents = {};
+
+	var internalSupportedComponents = {
+	  TextField: {
+	    getValueFromChangeEvent: function getValueFromChangeEvent(args) {
+	      return args[0].target.value;
+	    },
+	    changeCallBackCaller: function changeCallBackCaller(callback, args) {
+	      callback(args[0]);
+	    },
+	    errorPropName: "errorText"
+	  },
+	  SelectField: {
+	    getValueFromChangeEvent: function getValueFromChangeEvent(args) {
+	      return args[1];
+	    },
+	    changeCallBackCaller: function changeCallBackCaller(callback, args) {
+	      callback(args[0], args[1], args[2]);
+	    },
+	    errorPropName: "errorText"
+	  },
+	  DateRangePicker: {
+	    getValueFromChangeEvent: function getValueFromChangeEvent(args) {
+	      return args[0];
+	    },
+	    changeCallBackCaller: function changeCallBackCaller(callback, args) {
+	      callback(args[0]);
+	    },
+	    errorPropName: "errorText"
+	  },
+	  DatePicker: {
+	    getValueFromChangeEvent: function getValueFromChangeEvent(args) {
+	      return args[1];
+	    },
+	    changeCallBackCaller: function changeCallBackCaller(callback, args) {
+	      callback(args, args[1]);
+	    }
+	  },
+	  Select: {
+	    getValueFromChangeEvent: function getValueFromChangeEvent(args) {
+	      return args[0];
+	    },
+	    changeCallBackCaller: function changeCallBackCaller(callback, args) {
+	      callback(args[0]);
+	    }
+	  }
+	};
+
+	function getAllSupportedComponent() {
+	  return Object.assign({}, internalSupportedComponents, userAddedComponents);
+	}
+
+	var fieldValidatorCore = {
+	  addSupport: function addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName) {
+	    userAddedComponents[name] = {
+	      getValueFromChangeEvent: getValueFromChangeEvent,
+	      changeCallBackCaller: changeCallBackCaller,
+	      errorPropName: errorPropName
+	    };
+	  },
+	  removeSupport: function removeSupport(name) {
+	    if (userAddedComponents[name] !== undefined) {
+	      delete userAddedComponents.name;
+	    } else {
+	      console.info("Field-Validator", "removeComponent: didn't find the component");
+	    }
+	  },
+	  getAllCurrentlySupported: function getAllCurrentlySupported() {
+	    return getAllSupportedComponent();
+	  },
+	  checkGroup: function checkGroup(groupName) {
+	    var valid = true;
+	    var validityRes = {
+	      isValid: true,
+	      validCompponents: [],
+	      inValidComponents: []
+	    };
+	    var allCompsInGroup = groups[groupName];
+	    if (allCompsInGroup === undefined) {
+	      valid = true;
+	    } else {
+	      allCompsInGroup.forEach(function (v1) {
+	        var v = v1.component;
+	        if (v.isValid === false) {
+	          valid = false;
+	          validityRes.inValidComponents.push(v.props.children);
+	        } else {
+	          validityRes.validCompponents.push(v.props.children);
+	        }
+	      });
+	    }
+	    validityRes.isValid = valid;
+	    return validityRes;
+	  }
+	};
+
+	var Validation = function (_Component) {
+	  _inherits(Validation, _Component);
+
+	  function Validation(props) {
+	    _classCallCheck(this, Validation);
+
+	    var _this = _possibleConstructorReturn(this, (Validation.__proto__ || Object.getPrototypeOf(Validation)).call(this, props));
+
+	    _this.state = {
+	      childCompoentToRender: null,
+	      unControlledChild: true,
+	      isValid: true,
+	      id: generateUUID()
+	    };
+	    _this.testValidity = _this.testValidity.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(Validation, [{
+	    key: "componentWillReceiveProps",
+	    value: function componentWillReceiveProps(props) {
+	      var freshRendered = false;
+	      if (this.state.unsupported !== true) {
+	        if (this.state.unControlledChild === false) {
+	          var isDerivedValueComing = false;
+	          if (!_lodash2.default.isEqual(this.originalVal, props.children.props[this.props.valueProp])) {
+	            isDerivedValueComing = true;
+	          }
+	          if (this.childModified === true || isDerivedValueComing) {
+	            if (!_lodash2.default.isEqual(this.currentChildValue, props.children.props[this.props.valueProp])) {
+	              this.baseProps[this.props.valueProp] = props.children.props[this.props.valueProp];
+	              this.currentChildValue = props.children.props[this.props.valueProp];
+	              freshRendered = true;
+	              this.testValidity(this.currentChildValue);
+	            }
+	          }
+	        }
+	      }
+	      if (Object.keys(this.closureValues).length > 0 && freshRendered === false) {
+	        //match closures
+	        var requireRender = false;
+	        _lodash2.default.forOwn(this.closureValues, function (cVariableValue, cVariable) {
+	          if (!_lodash2.default.isEqual(cVariableValue, props.closures[cVariable])) {
+	            requireRender = true;
+	          }
+	        });
+	        if (requireRender) {
+	          this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent, getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, false, props);
+	          //also test validity if closure changes -- added if any validation dependes on closure values
+	          this.testValidity(this.currentChildValue);
+	        }
+	      }
+	    }
+	  }, {
+	    key: "componentWillMount",
+	    value: function componentWillMount() {
+	      this.typeOfCompnent = this.props.componentTag ? this.props.componentTag : this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name;
+	      if (userAddedComponents[this.typeOfCompnent] !== undefined) {
+	        this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
+	      } else {
+	        if (internalSupportedComponents[this.typeOfCompnent] !== undefined) {
+	          this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
+	        } else {
+	          console.error("Field-Validator", this.typeOfCompnent + " is currently not supported by field-validator,\n          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs");
+	          console.info("Field-Validator", "Ignoring " + this.typeOfCompnent + ", and it will work as if it was not wraped with Validation tag");
+	          this.mountingSetup(null, null, true);
+	        }
+	      }
+	    }
+	  }, {
+	    key: "componentDidMount",
+	    value: function componentDidMount() {
+	      if (this.props.group && this.state.unsupported !== true) {
+	        if (groups[this.props.group] === undefined) {
+	          groups[this.props.group] = [];
+	        }
+	        groups[this.props.group].push({
+	          id: this.state.id,
+	          component: this
+	        });
+	      }
+	    }
+	  }, {
+	    key: "mountingSetup",
+	    value: function mountingSetup(valueFromArgs, argsToPassToActualHandler, unsupportedFlag, nextProps) {
+	      var _this2 = this;
+
+	      var toUseProps = nextProps ? nextProps : this.props;
+	      if (unsupportedFlag === true) {
+	        this.setState({
+	          childCompoentToRender: toUseProps.children,
+	          unsupported: unsupportedFlag
+	        });
+	      } else {
+	        (function () {
+	          _this2.closureValues = {};
+	          if (Object.keys(toUseProps.closures).length > 0) {
+	            _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
+	              _this2.closureValues[cVariable] = cVariableValue;
+	            });
+	          }
+	          _this2.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
+	          var isUncontrolled = true;
+	          if (_this2.baseProps.hasOwnProperty(toUseProps.valueProp)) {
+	            isUncontrolled = false;
+	            if (nextProps !== true) {
+	              _this2.originalVal = _this2.baseProps[toUseProps.valueProp];
+	            }
+	            _this2.currentChildValue = _this2.baseProps[toUseProps.valueProp];
+	          } else {
+	            //try with default prop
+	            if (_this2.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
+	              if (nextProps !== true) {
+	                _this2.originalVal = _this2.baseProps[toUseProps.defaultValueProp];
+	              }
+	              _this2.currentChildValue = _this2.baseProps[toUseProps.defaultValueProp];
+	            }
+	          }
+
+	          var oldOnChange = _this2.baseProps[toUseProps.onChangeCallback];
+	          _this2.baseProps[toUseProps.onChangeCallback] = function () {
+	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	              args[_key] = arguments[_key];
+	            }
+
+	            var rArgs = valueFromArgs(args);
+	            _this2.childModified = true;
+	            if (!_this2.absorbing) {
+	              _this2.absorbing = true;
+	              _this2.baseProps[toUseProps.valueProp] = rArgs;
+	              _this2.currentChildValue = rArgs;
+	              _this2.testValidity(rArgs);
+	              if (oldOnChange) {
+	                argsToPassToActualHandler(oldOnChange, args);
+	              }
+	              _this2.absorbing = false;
+	            }
+	          };
+	          var theComponent = _react2.default.cloneElement(toUseProps.children, _this2.baseProps);
+	          _this2.setState({
+	            childCompoentToRender: theComponent,
+	            unControlledChild: isUncontrolled
+	          });
+	        })();
+	      }
+	    }
+	  }, {
+	    key: "testValidity",
+	    value: function testValidity(val) {
+	      var res = {
+	        isValid: true,
+	        errorMessage: null,
+	        errorPropValue: null
+	      };
+	      try {
+	        this.props.validators.every(function (v) {
+	          if (v.validator(val) === false) {
+	            res.isValid = false;
+	            res.errorMessage = v.errorMessage;
+	            res.errorPropValue = v.errorPropValue ? v.errorPropValue : v.errorMessage;
+	            return false;
+	          } else {
+	            return true;
+	          }
+	        });
+	      } catch (err) {
+	        console.error(err);
+	      }
+	      if (res.isValid === false) {
+	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
+	        }
+	        this.setState({
+	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
+	          isValid: false,
+	          errorText: res.errorMessage
+	        });
+	      } else {
+	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
+	        }
+	        this.setState({
+	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
+	          isValid: true,
+	          errorText: null
+	        });
+	      }
+	      return res;
+	    }
+	  }, {
+	    key: "componentWillUnmount",
+	    value: function componentWillUnmount() {
+	      var _this3 = this;
+
+	      if (this.props.group) {
+	        _lodash2.default.remove(groups[this.props.group], function (v) {
+	          return v.id === _this3.state.id;
+	        });
+	      }
+	    }
+	  }, {
+	    key: "render",
+	    value: function render() {
+	      if (this.state.unsupported === true) {
+	        return this.props.children;
+	      } else {
+	        return _react2.default.createElement(
+	          "span",
+	          null,
+	          this.state.childCompoentToRender ? this.state.childCompoentToRender : "",
+	          !getAllSupportedComponent()[this.typeOfCompnent].errorPropName && this.state.isValid === false ? _react2.default.createElement(
+	            "div",
+	            { style: Object.assign({}, { color: "red", fontSize: "12px", position: "absolute" }, this.props.errorStyle) },
+	            this.state.errorText
+	          ) : ""
+	        );
+	      }
+	    }
+	  }, {
+	    key: "isValid",
+	    get: function get() {
+	      return this.testValidity(this.currentChildValue).isValid;
+	    }
+	  }, {
+	    key: "errorMessage",
+	    get: function get() {
+	      return this.testValidity(this.currentChildValue).errorMessage;
+	    }
+	  }, {
+	    key: "errorPropValue",
+	    get: function get() {
+	      return this.testValidity(this.currentChildValue).errorPropValue;
+	    }
+	  }, {
+	    key: "isModified",
+	    get: function get() {
+	      return this.childModified;
+	    }
+	  }]);
+
+	  return Validation;
+	}(_react.Component);
+
+	Validation.propTypes = {
+	  children: _propTypes2.default.oneOfType([_propTypes2.default.element]),
+	  validators: _propTypes2.default.array.isRequired,
+	  onChangeCallback: _propTypes2.default.string,
+	  group: _propTypes2.default.string,
+	  valueProp: _propTypes2.default.string,
+	  defaultValueProp: _propTypes2.default.string,
+	  errorStyle: _propTypes2.default.object,
+	  closures: _propTypes2.default.object,
+	  componentTag: _propTypes2.default.string
+	};
+
+	Validation.defaultProps = {
+	  onChangeCallback: "onChange",
+	  valueProp: "value",
+	  defaultValueProp: "defaultValue",
+	  errorStyle: {},
+	  closures: {}
+	};
+
+	exports.Validation = Validation;
+	exports.fieldValidatorCore = fieldValidatorCore;
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
+
+/***/ }
+/******/ ])
+});
+;
