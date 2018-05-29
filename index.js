@@ -212,7 +212,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: generateUUID()
 	    };
 	    _this.typeOfCompnent = _this.props.componentTag ? _this.props.componentTag : _this.props.children.type.displayName ? _this.props.children.type.displayName : _this.props.children.type.name;
-	    console.log("typeComponent", _this.typeOfCompnent);
 	    _this.testValidity = _this.testValidity.bind(_this);
 	    return _this;
 	  }

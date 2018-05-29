@@ -128,7 +128,6 @@ class Validation extends Component {
       id: generateUUID()
     };
     this.typeOfCompnent = this.props.componentTag ? this.props.componentTag : (this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name);
-    console.log("typeComponent", this.typeOfCompnent);
     this.testValidity = this.testValidity.bind(this);
   }
   get isValid() {
