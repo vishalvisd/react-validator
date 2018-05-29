@@ -122,11 +122,26 @@ class Validation extends Component {
     super(props);
 
     this.state = {
-      childCompoentToRender: null,
+      childComponentToRender: null,
       unControlledChild: true,
       isValid: true,
       id: generateUUID()
     };
+    this.typeOfCompnent = this.props.componentTag ? this.props.componentTag : (this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name);
+    if (userAddedComponents[this.typeOfCompnent] !== undefined){
+      this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
+    } else {
+      if (internalSupportedComponents[this.typeOfCompnent] !== undefined){
+        this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
+      } else {
+        console.error("Field-Validator",
+          `${this.typeOfCompnent} is currently not supported by field-validator,
+          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs`);
+        console.info("Field-Validator", `Ignoring ${this.typeOfCompnent}, and it will work as if it was not wraped with Validation tag`);
+        this.mountingSetup(null, null, true);
+      }
+    }
+    console.log("typeComponent", this.typeOfCompnent);
     this.testValidity = this.testValidity.bind(this);
   }
   get isValid() {
@@ -172,27 +187,9 @@ class Validation extends Component {
         }
       });
       if (requireRender){
-        this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent,
-          getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, false, props);
+        this.mountingSetup(getAllSupportedComponent()[this.typeOfCompnent].getValueFromChangeEvent, getAllSupportedComponent()[this.typeOfCompnent].changeCallBackCaller, false, props);
         //also test validity if closure changes -- added if any validation dependes on closure values
         this.testValidity(this.currentChildValue);
-      }
-    }
-  }
-
-  componentWillMount() {
-    this.typeOfCompnent = this.props.componentTag ? this.props.componentTag : (this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name);
-    if (userAddedComponents[this.typeOfCompnent] !== undefined){
-      this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
-    } else {
-      if (internalSupportedComponents[this.typeOfCompnent] !== undefined){
-        this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
-      } else {
-        console.error("Field-Validator",
-          `${this.typeOfCompnent} is currently not supported by field-validator,
-          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs`);
-        console.info("Field-Validator", `Ignoring ${this.typeOfCompnent}, and it will work as if it was not wraped with Validation tag`);
-        this.mountingSetup(null, null, true);
       }
     }
   }
@@ -213,7 +210,7 @@ class Validation extends Component {
     let toUseProps = nextProps ? nextProps : this.props;
     if (unsupportedFlag === true){
       this.setState({
-        childCompoentToRender: toUseProps.children,
+        childComponentToRender: toUseProps.children,
         unsupported: unsupportedFlag
       });
     } else {
@@ -247,18 +244,22 @@ class Validation extends Component {
         this.childModified = true;
         if (!this.absorbing){
           this.absorbing = true;
-          this.baseProps[toUseProps.valueProp] = rArgs;
-          this.currentChildValue = rArgs;
-          this.testValidity(rArgs);
-          if (oldOnChange) {
-            argsToPassToActualHandler(oldOnChange, args);
+          try {
+            this.baseProps[toUseProps.valueProp] = rArgs;
+            this.currentChildValue = rArgs;
+            this.testValidity(rArgs);
+            if (oldOnChange) {
+              argsToPassToActualHandler(oldOnChange, args);
+            }
+          } catch (er){
+            this.absorbing = false;
           }
           this.absorbing = false;
         }
       };
       let theComponent = React.cloneElement(toUseProps.children, this.baseProps);
       this.setState({
-        childCompoentToRender: theComponent,
+        childComponentToRender: theComponent,
         unControlledChild: isUncontrolled
       });
     }
@@ -289,7 +290,7 @@ class Validation extends Component {
         this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
       }
       this.setState({
-        childCompoentToRender: React.cloneElement(this.props.children, this.baseProps),
+        childComponentToRender: React.cloneElement(this.props.children, this.baseProps),
         isValid: false,
         errorText: res.errorMessage
       });
@@ -298,7 +299,7 @@ class Validation extends Component {
         this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
       }
       this.setState({
-        childCompoentToRender: React.cloneElement(this.props.children, this.baseProps),
+        childComponentToRender: React.cloneElement(this.props.children, this.baseProps),
         isValid: true,
         errorText: null
       });
@@ -320,16 +321,17 @@ class Validation extends Component {
     } else {
       return (
         <span>
-        {
-          this.state.childCompoentToRender ? this.state.childCompoentToRender : ""
-        }{
-          (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ? <div style={Object.assign({}, {color: "red", fontSize: "12px", position: "absolute"}, this.props.errorStyle)}>
-              {
-                this.state.errorText
-              }
-            </div> : ""
-        }
-      </span>
+          {
+            this.state.childComponentToRender ? this.state.childComponentToRender : ""
+          }{
+            (!(getAllSupportedComponent()[this.typeOfCompnent].errorPropName)) && this.state.isValid === false ?
+              <div style={Object.assign({}, {color: "red", fontSize: "12px", position: "absolute"}, this.props.errorStyle)}>
+                {
+                  this.state.errorText
+                }
+              </div> : ""
+          }
+        </span>
       );
     }
   }

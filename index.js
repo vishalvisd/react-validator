@@ -52,7 +52,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -206,11 +206,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var _this = _possibleConstructorReturn(this, (Validation.__proto__ || Object.getPrototypeOf(Validation)).call(this, props));
 
 	    _this.state = {
-	      childCompoentToRender: null,
+	      childComponentToRender: null,
 	      unControlledChild: true,
 	      isValid: true,
 	      id: generateUUID()
 	    };
+	    _this.typeOfCompnent = _this.props.componentTag ? _this.props.componentTag : _this.props.children.type.displayName ? _this.props.children.type.displayName : _this.props.children.type.name;
+	    if (userAddedComponents[_this.typeOfCompnent] !== undefined) {
+	      _this.mountingSetup(userAddedComponents[_this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[_this.typeOfCompnent].changeCallBackCaller);
+	    } else {
+	      if (internalSupportedComponents[_this.typeOfCompnent] !== undefined) {
+	        _this.mountingSetup(internalSupportedComponents[_this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[_this.typeOfCompnent].changeCallBackCaller);
+	      } else {
+	        console.error("Field-Validator", _this.typeOfCompnent + " is currently not supported by field-validator,\n          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs");
+	        console.info("Field-Validator", "Ignoring " + _this.typeOfCompnent + ", and it will work as if it was not wraped with Validation tag");
+	        _this.mountingSetup(null, null, true);
+	      }
+	    }
+	    console.log("typeComponent", _this.typeOfCompnent);
 	    _this.testValidity = _this.testValidity.bind(_this);
 	    return _this;
 	  }
@@ -251,22 +264,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	  }, {
-	    key: "componentWillMount",
-	    value: function componentWillMount() {
-	      this.typeOfCompnent = this.props.componentTag ? this.props.componentTag : this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name;
-	      if (userAddedComponents[this.typeOfCompnent] !== undefined) {
-	        this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
-	      } else {
-	        if (internalSupportedComponents[this.typeOfCompnent] !== undefined) {
-	          this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
-	        } else {
-	          console.error("Field-Validator", this.typeOfCompnent + " is currently not supported by field-validator,\n          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs");
-	          console.info("Field-Validator", "Ignoring " + this.typeOfCompnent + ", and it will work as if it was not wraped with Validation tag");
-	          this.mountingSetup(null, null, true);
-	        }
-	      }
-	    }
-	  }, {
 	    key: "componentDidMount",
 	    value: function componentDidMount() {
 	      if (this.props.group && this.state.unsupported !== true) {
@@ -287,60 +284,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var toUseProps = nextProps ? nextProps : this.props;
 	      if (unsupportedFlag === true) {
 	        this.setState({
-	          childCompoentToRender: toUseProps.children,
+	          childComponentToRender: toUseProps.children,
 	          unsupported: unsupportedFlag
 	        });
 	      } else {
-	        (function () {
-	          _this2.closureValues = {};
-	          if (Object.keys(toUseProps.closures).length > 0) {
-	            _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
-	              _this2.closureValues[cVariable] = cVariableValue;
-	            });
+	        this.closureValues = {};
+	        if (Object.keys(toUseProps.closures).length > 0) {
+	          _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
+	            _this2.closureValues[cVariable] = cVariableValue;
+	          });
+	        }
+	        this.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
+	        var isUncontrolled = true;
+	        if (this.baseProps.hasOwnProperty(toUseProps.valueProp)) {
+	          isUncontrolled = false;
+	          if (nextProps !== true) {
+	            this.originalVal = this.baseProps[toUseProps.valueProp];
 	          }
-	          _this2.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
-	          var isUncontrolled = true;
-	          if (_this2.baseProps.hasOwnProperty(toUseProps.valueProp)) {
-	            isUncontrolled = false;
+	          this.currentChildValue = this.baseProps[toUseProps.valueProp];
+	        } else {
+	          //try with default prop
+	          if (this.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
 	            if (nextProps !== true) {
-	              _this2.originalVal = _this2.baseProps[toUseProps.valueProp];
+	              this.originalVal = this.baseProps[toUseProps.defaultValueProp];
 	            }
-	            _this2.currentChildValue = _this2.baseProps[toUseProps.valueProp];
-	          } else {
-	            //try with default prop
-	            if (_this2.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
-	              if (nextProps !== true) {
-	                _this2.originalVal = _this2.baseProps[toUseProps.defaultValueProp];
-	              }
-	              _this2.currentChildValue = _this2.baseProps[toUseProps.defaultValueProp];
-	            }
+	            this.currentChildValue = this.baseProps[toUseProps.defaultValueProp];
+	          }
+	        }
+
+	        var oldOnChange = this.baseProps[toUseProps.onChangeCallback];
+	        this.baseProps[toUseProps.onChangeCallback] = function () {
+	          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
 	          }
 
-	          var oldOnChange = _this2.baseProps[toUseProps.onChangeCallback];
-	          _this2.baseProps[toUseProps.onChangeCallback] = function () {
-	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	              args[_key] = arguments[_key];
-	            }
-
-	            var rArgs = valueFromArgs(args);
-	            _this2.childModified = true;
-	            if (!_this2.absorbing) {
-	              _this2.absorbing = true;
+	          var rArgs = valueFromArgs(args);
+	          _this2.childModified = true;
+	          if (!_this2.absorbing) {
+	            _this2.absorbing = true;
+	            try {
 	              _this2.baseProps[toUseProps.valueProp] = rArgs;
 	              _this2.currentChildValue = rArgs;
 	              _this2.testValidity(rArgs);
 	              if (oldOnChange) {
 	                argsToPassToActualHandler(oldOnChange, args);
 	              }
+	            } catch (er) {
 	              _this2.absorbing = false;
 	            }
-	          };
-	          var theComponent = _react2.default.cloneElement(toUseProps.children, _this2.baseProps);
-	          _this2.setState({
-	            childCompoentToRender: theComponent,
-	            unControlledChild: isUncontrolled
-	          });
-	        })();
+	            _this2.absorbing = false;
+	          }
+	        };
+	        var theComponent = _react2.default.cloneElement(toUseProps.children, this.baseProps);
+	        this.setState({
+	          childComponentToRender: theComponent,
+	          unControlledChild: isUncontrolled
+	        });
 	      }
 	    }
 	  }, {
@@ -370,7 +369,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
 	        }
 	        this.setState({
-	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
+	          childComponentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
 	          isValid: false,
 	          errorText: res.errorMessage
 	        });
@@ -379,7 +378,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
 	        }
 	        this.setState({
-	          childCompoentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
+	          childComponentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
 	          isValid: true,
 	          errorText: null
 	        });
@@ -406,7 +405,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return _react2.default.createElement(
 	          "span",
 	          null,
-	          this.state.childCompoentToRender ? this.state.childCompoentToRender : "",
+	          this.state.childComponentToRender ? this.state.childComponentToRender : "",
 	          !getAllSupportedComponent()[this.typeOfCompnent].errorPropName && this.state.isValid === false ? _react2.default.createElement(
 	            "div",
 	            { style: Object.assign({}, { color: "red", fontSize: "12px", position: "absolute" }, this.props.errorStyle) },
@@ -463,25 +462,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Validation = Validation;
 	exports.fieldValidatorCore = fieldValidatorCore;
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
