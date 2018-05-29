@@ -212,17 +212,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      id: generateUUID()
 	    };
 	    _this.typeOfCompnent = _this.props.componentTag ? _this.props.componentTag : _this.props.children.type.displayName ? _this.props.children.type.displayName : _this.props.children.type.name;
-	    if (userAddedComponents[_this.typeOfCompnent] !== undefined) {
-	      _this.mountingSetup(userAddedComponents[_this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[_this.typeOfCompnent].changeCallBackCaller);
-	    } else {
-	      if (internalSupportedComponents[_this.typeOfCompnent] !== undefined) {
-	        _this.mountingSetup(internalSupportedComponents[_this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[_this.typeOfCompnent].changeCallBackCaller);
-	      } else {
-	        console.error("Field-Validator", _this.typeOfCompnent + " is currently not supported by field-validator,\n          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs");
-	        console.info("Field-Validator", "Ignoring " + _this.typeOfCompnent + ", and it will work as if it was not wraped with Validation tag");
-	        _this.mountingSetup(null, null, true);
-	      }
-	    }
 	    console.log("typeComponent", _this.typeOfCompnent);
 	    _this.testValidity = _this.testValidity.bind(_this);
 	    return _this;
@@ -266,6 +255,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: "componentDidMount",
 	    value: function componentDidMount() {
+	      if (userAddedComponents[this.typeOfCompnent] !== undefined) {
+	        this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
+	      } else {
+	        if (internalSupportedComponents[this.typeOfCompnent] !== undefined) {
+	          this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
+	        } else {
+	          console.error("Field-Validator", this.typeOfCompnent + " is currently not supported by field-validator,\n          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs");
+	          console.info("Field-Validator", "Ignoring " + this.typeOfCompnent + ", and it will work as if it was not wraped with Validation tag");
+	          this.mountingSetup(null, null, true);
+	        }
+	      }
 	      if (this.props.group && this.state.unsupported !== true) {
 	        if (groups[this.props.group] === undefined) {
 	          groups[this.props.group] = [];

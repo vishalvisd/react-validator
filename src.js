@@ -128,19 +128,6 @@ class Validation extends Component {
       id: generateUUID()
     };
     this.typeOfCompnent = this.props.componentTag ? this.props.componentTag : (this.props.children.type.displayName ? this.props.children.type.displayName : this.props.children.type.name);
-    if (userAddedComponents[this.typeOfCompnent] !== undefined){
-      this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
-    } else {
-      if (internalSupportedComponents[this.typeOfCompnent] !== undefined){
-        this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
-      } else {
-        console.error("Field-Validator",
-          `${this.typeOfCompnent} is currently not supported by field-validator,
-          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs`);
-        console.info("Field-Validator", `Ignoring ${this.typeOfCompnent}, and it will work as if it was not wraped with Validation tag`);
-        this.mountingSetup(null, null, true);
-      }
-    }
     console.log("typeComponent", this.typeOfCompnent);
     this.testValidity = this.testValidity.bind(this);
   }
@@ -195,6 +182,19 @@ class Validation extends Component {
   }
 
   componentDidMount(){
+    if (userAddedComponents[this.typeOfCompnent] !== undefined){
+      this.mountingSetup(userAddedComponents[this.typeOfCompnent].getValueFromChangeEvent, userAddedComponents[this.typeOfCompnent].changeCallBackCaller);
+    } else {
+      if (internalSupportedComponents[this.typeOfCompnent] !== undefined){
+        this.mountingSetup(internalSupportedComponents[this.typeOfCompnent].getValueFromChangeEvent, internalSupportedComponents[this.typeOfCompnent].changeCallBackCaller);
+      } else {
+        console.error("Field-Validator",
+          `${this.typeOfCompnent} is currently not supported by field-validator,
+          Please use fieldValidatorCore.addSupport to add support for the component, For more information please refer to docs`);
+        console.info("Field-Validator", `Ignoring ${this.typeOfCompnent}, and it will work as if it was not wraped with Validation tag`);
+        this.mountingSetup(null, null, true);
+      }
+    }
     if (this.props.group && this.state.unsupported !== true){
       if (groups[this.props.group] === undefined){
         groups[this.props.group] = [];
