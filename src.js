@@ -30,7 +30,8 @@ let internalSupportedComponents = {
     changeCallBackCaller: (callback, args)=>{
       callback(args[0]);
     },
-    errorPropName: "errorText"
+    errorPropName: "errorText",
+    helperPropName: "helperText"
   },
   SelectField: {
     getValueFromChangeEvent: (args)=>{
@@ -73,11 +74,12 @@ function getAllSupportedComponent(){
 }
 
 let fieldValidatorCore = {
-  addSupport: (name, getValueFromChangeEvent, changeCallBackCaller, errorPropName) => {
+  addSupport: (name, getValueFromChangeEvent, changeCallBackCaller, errorPropName, helperPropName) => {
     userAddedComponents[name] = {
       getValueFromChangeEvent: getValueFromChangeEvent,
       changeCallBackCaller: changeCallBackCaller,
-      errorPropName: errorPropName
+      errorPropName: errorPropName,
+      helperPropName: helperPropName
     };
   },
   removeSupport: (name) => {
@@ -267,6 +269,7 @@ class Validation extends Component {
   testValidity(val){
     let res = {
       isValid: true,
+      helperMessage: null,
       errorMessage: null,
       errorPropValue: null
     };
@@ -274,6 +277,7 @@ class Validation extends Component {
       this.props.validators.every((v)=>{
         if (v.validator(val) === false){
           res.isValid = false;
+          res.helperMessage = v.errorMessage;
           res.errorMessage = v.errorMessage;
           res.errorPropValue = v.errorPropValue ? v.errorPropValue : v.errorMessage;
           return false;
@@ -287,20 +291,24 @@ class Validation extends Component {
     if (res.isValid === false){
       if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName){
         this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
+        this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = res.helperMessage;
       }
       this.setState({
         childComponentToRender: React.cloneElement(this.props.children, this.baseProps),
         isValid: false,
-        errorText: res.errorMessage
+        errorText: res.errorMessage,
+        helperText: res.errorMessage
       });
     } else {
       if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName){
         this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
+        this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = null;
       }
       this.setState({
         childComponentToRender: React.cloneElement(this.props.children, this.baseProps),
         isValid: true,
-        errorText: null
+        errorText: null,
+        helperText: null
       });
     }
     return res;

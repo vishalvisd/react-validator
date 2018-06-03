@@ -154,11 +154,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var fieldValidatorCore = {
-	  addSupport: function addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName) {
+	  addSupport: function addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName, helperPropName) {
 	    userAddedComponents[name] = {
 	      getValueFromChangeEvent: getValueFromChangeEvent,
 	      changeCallBackCaller: changeCallBackCaller,
-	      errorPropName: errorPropName
+				errorPropName: errorPropName,
+				helperPropName: helperPropName
 	    };
 	  },
 	  removeSupport: function removeSupport(name) {
@@ -347,7 +348,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: "testValidity",
 	    value: function testValidity(val) {
 	      var res = {
-	        isValid: true,
+					isValid: true,
+					helperMessage: null,
 	        errorMessage: null,
 	        errorPropValue: null
 	      };
@@ -355,7 +357,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.props.validators.every(function (v) {
 	          if (v.validator(val) === false) {
 	            res.isValid = false;
-	            res.errorMessage = v.errorMessage;
+							res.errorMessage = v.errorMessage;
+							res.helperMessage = v.errorMessage;
 	            res.errorPropValue = v.errorPropValue ? v.errorPropValue : v.errorMessage;
 	            return false;
 	          } else {
@@ -367,21 +370,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      if (res.isValid === false) {
 	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
-	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
+						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
+						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = res.helperMessage;
 	        }
 	        this.setState({
 	          childComponentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
 	          isValid: false,
-	          errorText: res.errorMessage
+						errorText: res.errorMessage,
+						helperText: res.errorMessage
 	        });
 	      } else {
 	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
-	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
+						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
+						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = null;
 	        }
 	        this.setState({
 	          childComponentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
 	          isValid: true,
-	          errorText: null
+						errorText: null,
+						helperText: null
 	        });
 	      }
 	      return res;
