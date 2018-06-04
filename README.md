@@ -64,7 +64,7 @@ Using ref validity of a paritcular filed at any point can be found.
 
 
 ***Real Code Example***
-```
+```jxs
     import {Validation, fieldValidatorCore} from "react-validation-framework";
     import validator from "validator";
     <Validation 
