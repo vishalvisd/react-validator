@@ -29,17 +29,19 @@ Using ref validity of a paritcular filed at any point can be found.
 ***Basic Usage***
 
 
-    <Validation
-      group={<optional>}
-      validator={<array of validators>}
-      onChangeCallback={<optional, default is 'onChange'>}
-      valueProp={<optional, default is 'value'>}
-      defaultValueProp={<optional, default is 'onChange'>}
-      closures={<object>}
-      tagName="YourComponent"
-      errorStyle={<optional>} >
-        <YourComponent />
-    </Validation>
+```jsx
+<Validation
+   group={<optional>}
+   validator={<array of validators>}
+   onChangeCallback={<optional, default is 'onChange'>}
+   valueProp={<optional, default is 'value'>}
+   defaultValueProp={<optional, default is 'onChange'>}
+   closures={<object>}
+   tagName="YourComponent"
+   errorStyle={<optional>} >
+   <YourComponent />
+</Validation>
+```
 
 ***Props***
   
@@ -64,7 +66,7 @@ Using ref validity of a paritcular filed at any point can be found.
 
 
 ***Real Code Example***
-```jxs
+```jsx
     import {Validation, fieldValidatorCore} from "react-validation-framework";
     import validator from "validator";
     <Validation 
@@ -111,7 +113,7 @@ etc or we can supply our own function for specific case to validate.
 
 **2-** “group” prop can be added to define the group in which the filed belongs.
 Later the group name can be used to find whether a group of filed is valid or not like this :
-
+```jsx
     handleSubmit(){
         let checkFieldTestResult = fieldValidatorCore.checkGroup("myGroup1");
         if (checkFieldTestResult.isValid){
@@ -122,7 +124,7 @@ Later the group name can be used to find whether a group of filed is valid or no
           console.log("Fields which are valid are ", checkFieldTestResult.validComponents
         }
       }
-
+```
 
   or simply add a ref to the Validation tag and call the isValid method to find if the field is valid.
   
@@ -140,7 +142,7 @@ Signature -
 **errorPropName**- string - if your component has a prop for errorText, ex. some* *material-ui components have "errorText"
 
 add the component before your page component mounts, like
-
+```jsx
     componentWillMount(){
         fieldValidatorCore.addSupport("TextField", (args)=>{
           return args[0].target.value;
@@ -148,10 +150,10 @@ add the component before your page component mounts, like
           callback(args[0]);
         }, "errorText");
       }
-
+```
 **4-** (with 2.3.0), If any other prop other than value prop of your field component has value derived from upper scope/closure, ex - 'area' in onChange, it is better to added those closures in a prop called closures, otherwise, if the value changes you field componenet will still be having old value
  
-
+```jsx
     <Validation group="ga1" closures={{area}} validators={...}>
       <TextField className={styles.inputStyles}
     	     value={foo}
@@ -170,7 +172,7 @@ add the component before your page component mounts, like
     	       }
       />
     </Validation> 
-
+```
 **5-** (with 4.0.0), set tagName prop as the tagName of your component to avoid failures while uglifying.
 
 
