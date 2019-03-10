@@ -52,7 +52,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
 
@@ -111,7 +111,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    changeCallBackCaller: function changeCallBackCaller(callback, args) {
 	      callback(args[0]);
 	    },
-	    errorPropName: "errorText"
+	    errorPropName: "errorText",
+	    helperPropName: "helperText"
 	  },
 	  SelectField: {
 	    getValueFromChangeEvent: function getValueFromChangeEvent(args) {
@@ -158,8 +159,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    userAddedComponents[name] = {
 	      getValueFromChangeEvent: getValueFromChangeEvent,
 	      changeCallBackCaller: changeCallBackCaller,
-				errorPropName: errorPropName,
-				helperPropName: helperPropName
+	      errorPropName: errorPropName,
+	      helperPropName: helperPropName
 	    };
 	  },
 	  removeSupport: function removeSupport(name) {
@@ -288,68 +289,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	          unsupported: unsupportedFlag
 	        });
 	      } else {
-	        (function () {
-	          _this2.closureValues = {};
-	          if (Object.keys(toUseProps.closures).length > 0) {
-	            _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
-	              _this2.closureValues[cVariable] = cVariableValue;
-	            });
+	        this.closureValues = {};
+	        if (Object.keys(toUseProps.closures).length > 0) {
+	          _lodash2.default.forOwn(toUseProps.closures, function (cVariableValue, cVariable) {
+	            _this2.closureValues[cVariable] = cVariableValue;
+	          });
+	        }
+	        this.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
+	        var isUncontrolled = true;
+	        if (this.baseProps.hasOwnProperty(toUseProps.valueProp)) {
+	          isUncontrolled = false;
+	          if (nextProps !== true) {
+	            this.originalVal = this.baseProps[toUseProps.valueProp];
 	          }
-	          _this2.baseProps = _lodash2.default.cloneDeep(toUseProps.children.props);
-	          var isUncontrolled = true;
-	          if (_this2.baseProps.hasOwnProperty(toUseProps.valueProp)) {
-	            isUncontrolled = false;
+	          this.currentChildValue = this.baseProps[toUseProps.valueProp];
+	        } else {
+	          //try with default prop
+	          if (this.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
 	            if (nextProps !== true) {
-	              _this2.originalVal = _this2.baseProps[toUseProps.valueProp];
+	              this.originalVal = this.baseProps[toUseProps.defaultValueProp];
 	            }
-	            _this2.currentChildValue = _this2.baseProps[toUseProps.valueProp];
-	          } else {
-	            //try with default prop
-	            if (_this2.baseProps.hasOwnProperty(toUseProps.defaultValueProp)) {
-	              if (nextProps !== true) {
-	                _this2.originalVal = _this2.baseProps[toUseProps.defaultValueProp];
-	              }
-	              _this2.currentChildValue = _this2.baseProps[toUseProps.defaultValueProp];
-	            }
+	            this.currentChildValue = this.baseProps[toUseProps.defaultValueProp];
+	          }
+	        }
+
+	        var oldOnChange = this.baseProps[toUseProps.onChangeCallback];
+	        this.baseProps[toUseProps.onChangeCallback] = function () {
+	          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	            args[_key] = arguments[_key];
 	          }
 
-	          var oldOnChange = _this2.baseProps[toUseProps.onChangeCallback];
-	          _this2.baseProps[toUseProps.onChangeCallback] = function () {
-	            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	              args[_key] = arguments[_key];
-	            }
-
-	            var rArgs = valueFromArgs(args);
-	            _this2.childModified = true;
-	            if (!_this2.absorbing) {
-	              _this2.absorbing = true;
-	              try {
-	                _this2.baseProps[toUseProps.valueProp] = rArgs;
-	                _this2.currentChildValue = rArgs;
-	                _this2.testValidity(rArgs);
-	                if (oldOnChange) {
-	                  argsToPassToActualHandler(oldOnChange, args);
-	                }
-	              } catch (er) {
-	                _this2.absorbing = false;
+	          var rArgs = valueFromArgs(args);
+	          _this2.childModified = true;
+	          if (!_this2.absorbing) {
+	            _this2.absorbing = true;
+	            try {
+	              _this2.baseProps[toUseProps.valueProp] = rArgs;
+	              _this2.currentChildValue = rArgs;
+	              _this2.testValidity(rArgs);
+	              if (oldOnChange) {
+	                argsToPassToActualHandler(oldOnChange, args);
 	              }
+	            } catch (er) {
 	              _this2.absorbing = false;
 	            }
-	          };
-	          var theComponent = _react2.default.cloneElement(toUseProps.children, _this2.baseProps);
-	          _this2.setState({
-	            childComponentToRender: theComponent,
-	            unControlledChild: isUncontrolled
-	          });
-	        })();
+	            _this2.absorbing = false;
+	          }
+	        };
+	        var theComponent = _react2.default.cloneElement(toUseProps.children, this.baseProps);
+	        this.setState({
+	          childComponentToRender: theComponent,
+	          unControlledChild: isUncontrolled
+	        });
 	      }
 	    }
 	  }, {
 	    key: "testValidity",
 	    value: function testValidity(val) {
 	      var res = {
-					isValid: true,
-					helperMessage: null,
+	        isValid: true,
+	        helperMessage: null,
 	        errorMessage: null,
 	        errorPropValue: null
 	      };
@@ -357,8 +356,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.props.validators.every(function (v) {
 	          if (v.validator(val) === false) {
 	            res.isValid = false;
-							res.errorMessage = v.errorMessage;
-							res.helperMessage = v.errorMessage;
+	            res.helperMessage = v.errorMessage;
+	            res.errorMessage = v.errorMessage;
 	            res.errorPropValue = v.errorPropValue ? v.errorPropValue : v.errorMessage;
 	            return false;
 	          } else {
@@ -370,25 +369,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	      if (res.isValid === false) {
 	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
-						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
-						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = res.helperMessage;
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = res.errorPropValue;
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = res.helperMessage;
 	        }
 	        this.setState({
 	          childComponentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
 	          isValid: false,
-						errorText: res.errorMessage,
-						helperText: res.errorMessage
+	          errorText: res.errorMessage,
+	          helperText: res.errorMessage
 	        });
 	      } else {
 	        if (getAllSupportedComponent()[this.typeOfCompnent].errorPropName) {
-						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
-						this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = null;
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].errorPropName] = null;
+	          this.baseProps[getAllSupportedComponent()[this.typeOfCompnent].helperPropName] = null;
 	        }
 	        this.setState({
 	          childComponentToRender: _react2.default.cloneElement(this.props.children, this.baseProps),
 	          isValid: true,
-						errorText: null,
-						helperText: null
+	          errorText: null,
+	          helperText: null
 	        });
 	      }
 	      return res;
@@ -470,25 +469,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Validation = Validation;
 	exports.fieldValidatorCore = fieldValidatorCore;
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_3__;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
