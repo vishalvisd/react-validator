@@ -131,7 +131,7 @@ Later the group name can be used to find whether a group of filed is valid or no
   **3-** To add a new component (This is required just one time. It could be somewhere in your index.js)
 
 Signature - 
-`fieldValidatorCore.addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName)`
+`fieldValidatorCore.addSupport(name, getValueFromChangeEvent, changeCallBackCaller, errorPropName, helperPropName)`
 
 **name** - string - Tag name of you component
 
@@ -139,7 +139,9 @@ Signature -
 
 **changeCallBackCaller** - function - (callback, args)=>{}
 
-**errorPropName**- string - if your component has a prop for errorText, ex. some* *material-ui components have "errorText"
+**errorPropName**- string - if your component has a prop for error, ex. some* *material-ui components have "error"
+
+**helperPropName**- string - if your component has a prop for helperText, ex. some* *material-ui components have "helperText"
 
 add the component before your page component mounts, like
 ```jsx
@@ -148,7 +150,7 @@ add the component before your page component mounts, like
           return args[0].target.value;
         }, (callback, args)=>{
           callback(args[0]);
-        }, "errorText");
+        }, "error", "helperText");
       }
 ```
 **4-** (with 2.3.0), If any other prop other than value prop of your field component has value derived from upper scope/closure, ex - 'area' in onChange, it is better to added those closures in a prop called closures, otherwise, if the value changes you field componenet will still be having old value
