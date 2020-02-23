@@ -179,7 +179,7 @@ add the component before your page component mounts, like
 
 
 **Final Note**
-Example usage are put in the examples directory.
-Contributors are ofcourse welcomed. PR will be reviewed and merged with few hours.
+Example usages are put in the examples directory.
+Contributors are welcomed.
 
 
