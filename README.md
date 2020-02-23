@@ -180,6 +180,6 @@ add the component before your page component mounts, like
 
 **Final Note**
 Example usages are put in the examples directory.
-Contributors are welcomed.
+Contributions are welcomed.
 
 
